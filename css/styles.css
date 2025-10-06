@@ -1,0 +1,259 @@
+/* === ESTILOS GENERALES === */
+body {
+    margin: 0;
+    font-family: 'Baloo 2', cursive;
+    background-color: #ffffff; /* Fondo blanco */
+    color: #333;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin: 20px 0;
+    color: #8D0032; /* Rosa */
+}
+
+/* === HEADER === */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #fff8c8;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.logo img {
+    width: 150px;
+    height: auto;
+}
+
+.search input {
+  background: #F48FB1 url("../img/lupa.png") no-repeat 8px center; /* fondo rosa + lupa */
+  background-size: 16px; /* tamaño de la lupa */
+  border: none;
+  padding: 8px 12px 8px 32px; /* padding extra a la izquierda para que no tape el texto */
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  width: 180px;
+}
+
+.home-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: #ff69b4; /* Rosa */
+    font-weight: bold;
+}
+
+.home-link img {
+    width: 70px;
+}
+
+/* === MENÚ LATERAL === */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;              
+  height: 100%;
+  background-color: #BEE1C0; /* Rosa fuerte */
+  color: #f34680;
+  font-weight: bold;
+  transform: translateX(-100%); /* Oculto al inicio */
+  transition: transform 0.3s ease-in-out;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 1001; /* Encima del overlay */
+}
+
+/* Cuando el menú está activo */
+.sidebar.active {
+  transform: translateX(0);
+}
+
+/* Contenido del usuario */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.user-info img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Lista del menú */
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.menu li:hover {
+  background-color: rgba(49, 51, 50, 0.2);
+  border-radius: 10px;
+}
+
+.menu-button img {
+    width: 30px;   /* tamaño del ícono */
+    height: auto;
+}
+
+.menu-button {
+    background: none;  /* sin fondo */
+    border: none;      /* sin borde */
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === OVERLAY (fondo oscuro) === */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000; /* Debajo del menú */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* === MAIN CONTENT === */
+.main-content {
+    padding: 20px;
+}
+
+.games-section {
+    margin-bottom: 40px;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.game-card {
+    text-align: center;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.game-card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.game-card p {
+    margin: 10px 0 0;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* === FOOTER === */
+.footer {
+  background-color: #ff7eb9;
+  color: white;
+  padding: 40px 20px 20px;
+  text-align: left;
+  font-family: 'Baloo 2', cursive;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-column h3 {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin: 6px 0;
+}
+
+.footer-column ul li a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: 0.3s;
+}
+
+.footer-column ul li a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.social-icons {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;  /* 🔹 Centra los íconos horizontalmente */
+  align-items: center;
+  gap: 20px;                /* 🔹 Espacio parejo entre íconos */
+}
+
+.social-icons a img {
+  
+  object-fit: contain;      /* 🔹 Evita deformaciones */
+  filter: brightness(0) invert(1); /* 🔹 Blanco sobre fondo rosa */
+  transition: transform 0.3s ease;
+}
+
+.social-icons a img:hover {
+  transform: scale(1.2);    /* 🔹 Efecto al pasar el mouse */
+}
+
+.footer-copy {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 30px;
+  opacity: 0.9;
+}
+
+
+

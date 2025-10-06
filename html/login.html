@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pinki - Iniciar Sesión</title>
+  <link rel="stylesheet" href="../css/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+   <!-- Encabezado -->
+    <header class="header">
+        <button class="menu-button">
+            <img src="../img/menu.png" alt="Menú">
+        </button>
+        <div class="logo">
+            <img src="../img/logo.png" alt="Pinki">
+        </div>
+        <div class="search">
+            <input type="text" placeholder="">
+        </div>
+        <a href="index.html" class="home-link">
+          <img src="../img/icon.png" alt="Inicio">
+        </a>
+    </header>
+
+    <!-- Menú lateral -->
+    <aside class="sidebar">
+        <div class="user-info">
+            <img src="../img/user-icon.png" alt="">
+            <p>princesa123</p>
+        </div>
+        <nav class="menu">
+            <ul>
+            <li><img src="../img/beach-icon.png" alt="Juegos de Playa">playa</li>
+            <li><img src="../img/travel-icon.png" alt="Juegos de Viajes">viajes</li>
+            <li><img src="../img/cooking-icon.png" alt="Juegos de Cocina">cocina</li>
+            <li><img src="../img/clothing-icon.png" alt="Juegos de Ropa">ropa</li>
+            <li><img src="../img/music-icon.png" alt="Juegos de Musica">música</li>
+            <li><img src="../img/magic-icon.png" alt="Juegos de Magia">magia</li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Fondo semitransparente para cerrar el menú -->
+    <div class="overlay"></div>
+
+  <!-- LOGIN CARD -->
+  <main class="login-container">
+    <h2>Iniciar Sesión | Registrarse</h2>
+
+    <form class="login-form">
+      <label>Email</label>
+      <input type="email" placeholder="Ingrese su correo electrónico" required>
+      
+      <label>Contraseña</label>
+      <input type="password" placeholder="Ingrese su contraseña" required>
+      
+      <div class="oauth">
+        <button type="button" class="google-btn">Iniciar con Google</button>
+        <button type="button" class="fb-btn">Iniciar con Facebook</button>
+      </div>
+
+      <div class="captcha">
+        <input type="checkbox" id="captcha">
+        <label for="captcha">No soy un robot</label>
+      </div>
+
+      <p class="register-text">¿Aún no tienes una cuenta? <a href="#">Regístrate</a></p>
+
+      <button type="submit" class="submit-btn">Iniciar Sesión</button>
+    </form>
+  </main>
+
+  <!-- FOOTER -->
+ <footer class="footer">
+  <div class="footer-container">
+    <div class="footer-column">
+      <h3>Información de la empresa</h3>
+      <ul>
+        <li><a href="#">Sobre nosotros</a></li>
+        <li><a href="#">Nuestra misión</a></li>
+        <li><a href="#">Blog / Noticias</a></li>
+        <li><a href="#">Trabajá con nosotros</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h3>Comunidad</h3>
+      <ul>
+        <li><a href="#">Eventos</a></li>
+        <li><a href="#">Foros</a></li>
+        <li><a href="#">Reseñas de usuarios</a></li>
+        <li><a href="#">Concurso</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h3>Ayuda y Soporte</h3>
+      <ul>
+        <li><a href="#">Preguntas Frecuentes (FAQ)</a></li>
+        <li><a href="#">Centro de ayuda</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h3>Legal</h3>
+      <ul>
+        <li><a href="#">Términos y condiciones</a></li>
+        <li><a href="#">Política de privacidad</a></li>
+        <li><a href="#">Cookies</a></li>
+      </ul>
+    </div>
+ </div>
+
+    <div class="social-icons">
+        <a href="#"><img src="../img/discord.png" alt="Discord"></a>
+        <a href="#"><img src="../img/twich.png" alt="Twitch"></a>
+        <a href="#"><img src="../img/facebook.png" alt="Facebook"></a>
+        <a href="#"><img src="../img/twitter.png" alt="X"></a>
+        <a href="#"><img src="../img/instagram.png" alt="Instagram"></a>
+    </div>
+ 
+    <p class="footer-copy">© 2025 Pinki. Todos los juegos y sonrisas reservadas</p>
+</footer>
+
+  <script src="../js/login.js"></script>
+</body>
+</html>
