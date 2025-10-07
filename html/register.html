@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pinki - Iniciar Sesión</title>
-  <link rel="stylesheet" href="../css/login.css">
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Pinki - Registro</title>
+  <link rel="stylesheet" href="../css/register.css">
 </head>
 <body>
 
@@ -46,33 +45,44 @@
     <!-- Fondo semitransparente para cerrar el menú -->
     <div class="overlay"></div>
 
-  <!-- LOGIN CARD -->
-  <main class="login-container">
-    <h2>Iniciar Sesión | Registrarse</h2>
+  <!-- Formulario -->
+  <main class="container">
+    <form class="formulario">
+      <h2>Registro</h2>
+      <label>Nombre *</label>
+      <input type="text" placeholder="Ingrese su nombre" required>
 
-    <form class="login-form">
-      <label>Email</label>
+      <label>Apellido *</label>
+      <input type="text" placeholder="Ingrese su apellido" required>
+
+      <label>Nickname *</label>
+      <input type="text" placeholder="Ingrese su nombre de usuario" required>
+
+      <label>Edad *</label>
+      <input type="number" placeholder="Ingrese su edad" required>
+
+      <label>Email *</label>
       <input type="email" placeholder="Ingrese su correo electrónico" required>
-      
-      <label>Contraseña</label>
+
+      <label>Contraseña *</label>
       <input type="password" placeholder="Ingrese su contraseña" required>
-      
-      <div class="oauth">
-        <button type="button" class="google-btn">Iniciar con Google</button>
-        <button type="button" class="fb-btn">Iniciar con Facebook</button>
+
+      <input type="password" placeholder="Repita su contraseña" required>
+
+      <div class="social-buttons">
+        <button class="google">Sign up with Google</button>
+        <button class="facebook">Sign up with Facebook</button>
       </div>
 
       <div class="captcha">
-        <input type="checkbox" id="captcha">
-        <label for="captcha">No soy un robot</label>
+        <input type="checkbox" id="robot">
+        <label for="robot">I'm not a robot</label>
       </div>
 
-      <p class="register-text">¿Aún no tienes una cuenta? <a href="./register.html">Regístrate</a></p>
-
-      <button type="submit" class="submit-btn">Iniciar Sesión</button>
+      <p class="cuenta">¿Ya tienes una cuenta? <a href="#">Iniciar sesión</a></p>
     </form>
   </main>
-
+  
   <!-- FOOTER -->
  <footer class="footer">
   <div class="footer-container">
@@ -125,7 +135,6 @@
  
     <p class="footer-copy">© 2025 Pinki. Todos los juegos y sonrisas reservadas</p>
 </footer>
-
-  <script src="../js/login.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,234 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff6cc;
+  padding: 10px 20px;
+  position: relative;
+}
+
+.menu-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #80304a;
+  cursor: pointer;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.logo h1 {
+  color: #ff6699;
+  font-size: 24px;
+  margin: 0;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: #ff99c2;
+  border-radius: 8px;
+  padding: 3px 8px;
+}
+
+.search-container input {
+  border: none;
+  background: none;
+  outline: none;
+  padding: 5px;
+  color: #fff;
+}
+
+.search-icon {
+  font-size: 16px;
+  color: white;
+}
+
+.inicio {
+  display: flex;
+  align-items: center;
+  color: #80304a;
+  gap: 5px;
+}
+
+.inicio a {
+  text-decoration: none;
+  color: #80304a;
+  font-weight: bold;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  left: -200px;
+  top: 0;
+  width: 200px;
+  height: 100%;
+  background-color: #ffd1dc;
+  display: flex;
+  flex-direction: column;
+  padding-top: 60px;
+  transition: 0.3s;
+}
+
+.sidebar a {
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #80304a;
+  font-weight: bold;
+}
+
+.sidebar a:hover {
+  background-color: #ffb6c1;
+}
+
+/* Formulario */
+.container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.formulario {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formulario h2 {
+  text-align: center;
+  color: #80304a;
+}
+
+.formulario label {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #80304a;
+}
+
+.formulario input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.google {
+  background-color: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.facebook {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.captcha {
+  margin-top: 15px;
+}
+
+.cuenta {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.cuenta a {
+  color: #ff6699;
+  text-decoration: none;
+}
+ FOOTER */
+/* === FOOTER === */
+.footer {
+  background-color: #ff7eb9;
+  color: white;
+  padding: 40px 20px 20px;
+  text-align: left;
+  font-family: 'Baloo 2', cursive;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-column h3 {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin: 6px 0;
+}
+
+.footer-column ul li a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: 0.3s;
+}
+/*FOOTER*/
+.footer-column ul li a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.social-icons {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;  /* 🔹 Centra los íconos horizontalmente */
+  align-items: center;
+  gap: 20px;                /* 🔹 Espacio parejo entre íconos */
+}
+
+.social-icons a img {
+  
+  object-fit: contain;      /* 🔹 Evita deformaciones */
+  filter: brightness(0) invert(1); /* 🔹 Blanco sobre fondo rosa */
+  transition: transform 0.3s ease;
+}
+
+.social-icons a img:hover {
+  transform: scale(1.2);    /* 🔹 Efecto al pasar el mouse */
+}
+
+.footer-copy {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 30px;
+  opacity: 0.9;
+}
