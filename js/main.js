@@ -19,22 +19,6 @@ if (menuButton && sidebar && overlay) {
   });
 }
 
-// --- COMENTARIOS ---
-const commentInput = document.querySelector(".comment-input");
-const commentsContainer = document.querySelector(".comments");
-
-if (commentInput && commentsContainer) {
-  commentInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter" && e.target.value.trim() !== "") {
-      const commentBox = document.createElement("div");
-      commentBox.classList.add("comment");
-      commentBox.innerHTML = `<strong>Tú:</strong> ${e.target.value}`;
-      commentsContainer.insertBefore(commentBox, commentInput);
-      e.target.value = "";
-    }
-  });
-}
-
 // --- LOADER SIMULADO ---
 window.addEventListener("load", () => {
   const loader = document.getElementById("loader");
