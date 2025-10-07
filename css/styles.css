@@ -418,5 +418,86 @@ h2 {
   opacity: 0.9;
 }
 
+/* === CARDS MODERNAS Y ANIMADAS SIN DEGRADE === */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.game-card {
+    position: relative;
+    background-color: #fff0f5; /* color sólido en lugar de degrade */
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(255, 90, 118, 0.2);
+    text-align: center;
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+}
+
+.game-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 15px;
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.game-card p {
+    margin: 10px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #c7005b;
+    padding: 0 5px;
+    transition: color 0.3s ease;
+}
+
+/* BOTÓN JUGAR MODERNO */
+.game-card .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background-color: #ff5a76; /* color sólido */
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    font-weight: bold;
+    font-size: 1.05rem;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255, 90, 118, 0.6);
+    opacity: 0;
+    z-index: 10;
+    transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* HOVER EFECTO LEVITAR */
+.game-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 15px 30px rgba(255, 90, 118, 0.4);
+    background-color: #ffe6f0; /* color sólido al pasar el mouse */
+}
+
+.game-card:hover img {
+    transform: scale(1.08);
+    filter: brightness(1.1);
+}
+
+.game-card:hover p {
+    color: #ff2d6a;
+}
+
+.game-card:hover .play-btn {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    box-shadow: 0 0 25px rgba(255, 90, 118, 0.8);
+}
+
+/* TRANSICIÓN DE BOTÓN AL PASAR EL MOUSE */
+.game-card .play-btn:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 90, 118, 1);
+}
 
 
