@@ -16,3 +16,13 @@ if (menuButton && sidebar && overlay) {
     overlay.classList.remove('active');
   });
 }
+// Simular comentario
+document.querySelector(".comment-input").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    const commentBox = document.createElement("div");
+    commentBox.classList.add("comment");
+    commentBox.innerHTML = `<strong>Tú:</strong> ${e.target.value}`;
+    document.querySelector(".comments").insertBefore(commentBox, e.target);
+    e.target.value = "";
+  }
+});
