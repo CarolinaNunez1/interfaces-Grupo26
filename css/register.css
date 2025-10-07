@@ -1,25 +1,18 @@
+/* General */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #fff;
 }
 
-/* Header */
+/* HEADER */
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #fff6cc;
-  padding: 10px 20px;
-  position: relative;
-}
-
-.menu-btn {
-  font-size: 24px;
-  background: none;
-  border: none;
-  color: #80304a;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #fff8c8;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
@@ -28,69 +21,126 @@ body {
   gap: 5px;
 }
 
-.logo h1 {
-  color: #ff6699;
-  font-size: 24px;
-  margin: 0;
+.logo img {
+    width: 150px;
+    height: auto;
 }
 
-.search-container {
+.search input {
+  background: #F48FB1 url("../img/lupa.png") no-repeat 8px center; /* fondo rosa + lupa */
+  background-size: 16px; /* tamaño de la lupa */
+  border: none;
+  padding: 8px 12px 8px 32px; /* padding extra a la izquierda para que no tape el texto */
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  width: 180px;
+}
+
+.home-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: #ff69b4; /* Rosa */
+    font-weight: bold;
+}
+
+.home-link img {
+    width: 70px;
+}
+
+/* === MENÚ LATERAL === */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;              
+  height: 100%;
+  background-color: #BEE1C0; /* Rosa fuerte */
+  color: #f34680;
+  font-weight: bold;
+  transform: translateX(-100%); /* Oculto al inicio */
+  transition: transform 0.3s ease-in-out;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 1001; /* Encima del overlay */
+}
+
+
+/* Cuando el menú está activo */
+.sidebar.active {
+  transform: translateX(0);
+}
+
+/* Contenido del usuario */
+.user-info {
   display: flex;
   align-items: center;
-  background-color: #ff99c2;
-  border-radius: 8px;
-  padding: 3px 8px;
-}
-
-.search-container input {
-  border: none;
-  background: none;
-  outline: none;
-  padding: 5px;
-  color: #fff;
-}
-
-.search-icon {
-  font-size: 16px;
+  gap: 10px;
+  margin-bottom: 20px;
   color: white;
 }
 
-.inicio {
+.user-info img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Lista del menú */
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
   display: flex;
   align-items: center;
-  color: #80304a;
-  gap: 5px;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.inicio a {
-  text-decoration: none;
-  color: #80304a;
-  font-weight: bold;
+.menu li:hover {
+  background-color: rgba(49, 51, 50, 0.2);
+  border-radius: 10px;
 }
 
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  left: -200px;
-  top: 0;
-  width: 200px;
-  height: 100%;
-  background-color: #ffd1dc;
-  display: flex;
-  flex-direction: column;
-  padding-top: 60px;
-  transition: 0.3s;
+.menu-button img {
+    width: 30px;   /* tamaño del ícono */
+    height: auto;
 }
 
-.sidebar a {
-  padding: 10px 20px;
-  text-decoration: none;
-  color: #80304a;
-  font-weight: bold;
+.menu-button {
+    background: none;  /* sin fondo */
+    border: none;      /* sin borde */
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.sidebar a:hover {
-  background-color: #ffb6c1;
+/* === OVERLAY (fondo oscuro) === */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000; /* Debajo del menú */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.overlay.active {
+    display: block;
+    opacity: 1;
 }
 
 /* Formulario */
@@ -99,7 +149,6 @@ body {
   justify-content: center;
   margin-top: 40px;
 }
-
 .formulario {
   background-color: #fff;
   padding: 25px;
@@ -112,13 +161,11 @@ body {
 
 .formulario h2 {
   text-align: center;
-  color: #80304a;
 }
 
 .formulario label {
   margin-top: 10px;
   font-weight: bold;
-  color: #80304a;
 }
 
 .formulario input {
@@ -135,33 +182,52 @@ body {
   margin-top: 15px;
 }
 
-.google {
-  background-color: white;
-  border: 1px solid #ccc;
-  cursor: pointer;
+.oauth {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.facebook {
-  background-color: #1877f2;
-  color: white;
+.login-text a {
+  color: #ff4d94;       /* Rosa igual al botón */
+  text-decoration: none; /* Sin subrayado */
+  font-weight: 500;
+}
+
+.login-text a:hover {
+  text-decoration: none; /* También sin subrayado al pasar el mouse */
+  color: #ff6dad;        /* Un tono más claro al hacer hover (opcional) */
+}
+.google-btn, .fb-btn {
+  padding: 8px;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
+}
+
+.google-btn {
+  background: #f6dcdc;
+}
+
+.fb-btn {
+  background: #d6e3f6;
 }
 
 .captcha {
   margin-top: 15px;
 }
 
-.cuenta {
-  text-align: center;
-  margin-top: 15px;
+.submit-btn {
+  background: #e24c88;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
 }
-
-.cuenta a {
-  color: #ff6699;
-  text-decoration: none;
-}
- FOOTER */
+/* FOOTER */
 /* === FOOTER === */
 .footer {
   background-color: #ff7eb9;
@@ -201,7 +267,7 @@ body {
   opacity: 0.85;
   transition: 0.3s;
 }
-/*FOOTER*/
+
 .footer-column ul li a:hover {
   opacity: 1;
   text-decoration: underline;
