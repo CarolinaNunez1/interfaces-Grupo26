@@ -186,24 +186,50 @@ h2 {
 
 /* JUEGO */
 .game-section {
-  text-align: center;
+  display: flex;
+  flex-direction: column; /* para que el botón queda debajo */
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
 }
+
 .game-board {
-  background: #8e2345;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 20px auto;
   padding: 30px;
-  width: 300px;
-  height: 300px;
   border-radius: 10px;
+  background-color: #863651; /* color de fondo del tablero */
 }
+
+/* Asegura que la imagen ocupe todo el tablero */
+.game-board img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+/* BOTÓN JUGAR */
 .play-btn {
   background: #FF5A76;
   border: none;
-  padding: 10px 20px;
+  padding: 16px 40px;
   color: white;
   font-weight: bold;
-  border-radius: 5px;
+  font-size: 20px;
+  border-radius: 12px;
   cursor: pointer;
+  margin-top: 25px; /* separa del tablero */
+  transition: all 0.3s ease;
+}
+
+.play-btn:hover {
+  background: #8e2345; /* cambia a color mas oscuro */
+  transform: scale(1.05); /* se agranda a penas al pasar el mouse */
+  transition: all 0.3s ease; /* suaviza la animación */
 }
 
 .instrucciones {
