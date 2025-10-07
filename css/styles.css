@@ -524,4 +524,69 @@ h2 {
     box-shadow: 0 0 30px rgba(255, 90, 118, 1);
 }
 
+/* === LOADER SIMULADO === */
+#loader {
+  position: fixed;
+  inset: 0;
+  background-color: #ffebf3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease;
+  opacity: 1;
+  font-family: 'Baloo 2', cursive;
+}
 
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* 🔸 Cuadrado animado */
+.spinner {
+  width: 60px;
+  height: 60px;
+  background-color: #ff5a76;
+  border-radius: 12px;
+  animation: girarYColor 1.2s ease-in-out infinite;
+  margin-bottom: 15px;
+}
+
+/* Animación combinada: gira + cambia de color + escala */
+@keyframes girarYColor {
+  0% {
+    transform: rotate(0deg) scale(1);
+    background-color: #ff5a76;
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+    background-color: #ff8ba5;
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+    background-color: #ffaec4;
+  }
+  75% {
+    transform: rotate(270deg) scale(0.9);
+    background-color: #ff8ba5;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    background-color: #ff5a76;
+  }
+}
+
+.loading-text {
+  color: #ff5a76;
+  font-size: 1.2rem;
+}
+
+/* 🔸 Cuando termina la carga */
+#loader.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
