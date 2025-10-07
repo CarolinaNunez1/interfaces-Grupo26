@@ -185,10 +185,11 @@ h2 {
 }
 
 /* JUEGO */
+
 .game-section {
   display: flex;
-  flex-direction: column; /* para que el botón queda debajo */
-  align-items: center;
+  flex-direction: column;
+  align-items: center; 
   justify-content: center;
   margin-top: 20px;
 }
@@ -198,22 +199,25 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px auto;
-  padding: 30px;
+  width: 600px;  
+  height: 600px;
   border-radius: 10px;
-  background-color: #863651; /* color de fondo del tablero */
+  background-color: #863651;
+  overflow: hidden;
 }
 
-/* Asegura que la imagen ocupe todo el tablero */
+/* IMAGEN DEL TABLERO */
 .game-board img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   border-radius: 10px;
   display: block;
 }
 
 /* BOTÓN JUGAR */
 .play-btn {
+  position: relative;
   background: #FF5A76;
   border: none;
   padding: 16px 40px;
@@ -222,14 +226,34 @@ h2 {
   font-size: 20px;
   border-radius: 12px;
   cursor: pointer;
-  margin-top: 25px; /* separa del tablero */
+  margin-top: 25px;
+  overflow: hidden; /* mantiene la animación dentro del botón */
   transition: all 0.3s ease;
+  align-self: center; /* asegura que quede centrado */
+}
+
+/* EFECTO DE BRILLO */
+.play-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80px;
+  width: 50px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+
+/* ANIMACIÓN AL PASAR EL MOUSE */
+.play-btn:hover::before {
+  left: 120%;
 }
 
 .play-btn:hover {
-  background: #8e2345; /* cambia a color mas oscuro */
-  transform: scale(1.05); /* se agranda a penas al pasar el mouse */
-  transition: all 0.3s ease; /* suaviza la animación */
+  background: #8e2345;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 90, 118, 0.4);
 }
 
 .instrucciones {
@@ -324,7 +348,7 @@ h2 {
   border-radius: 8px;
   border: 1px solid #D1D1D1; /* Borde */
   padding: 6px 12px;
-  width: 320px;          
+  width: 550px;          
   height: 28px;        
   display: flex;
   align-items: center;
@@ -336,7 +360,7 @@ h2 {
   border: 1px solid #D1D1D1;
   border-radius: 8px;
   padding: 6px 12px;
-  width: 320px;
+  width: 550px;
   height: 28px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
   font-family: 'Baloo 2', cursive;
