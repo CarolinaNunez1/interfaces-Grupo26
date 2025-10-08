@@ -82,3 +82,5 @@ if (track && nextBtn && prevBtn) {
     updateCarousel();
   }, 4000);
 }
+
+
