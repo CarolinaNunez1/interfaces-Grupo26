@@ -218,31 +218,36 @@ body {
   margin-top: 15px;
 }
 
+.btn-register {
+    /* Fondo con degradado animado */
+    background: linear-gradient(45deg, #ce5d88, #e799cd, #6d093b);
+    background-size: 300% 300%;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
 
-.btn-registrar {
-  background-color: #ff66a3;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px;
-  width: 100%;
-  font-size: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 0 0 rgba(255,255,255,0);
+    /* Tamaño y espaciado */
+    padding: 10px;
+    width: 100%;
+    font-size: 15px;
+
+    /* Interacciones y animación */
+    cursor: pointer;
+    transition: transform 0.3s, background-position 3s ease-in-out;
+    animation: moverGradiente 3s infinite alternate;
 }
 
-.btn-registrar:hover {
-  animation: heartbeat 1s infinite;
+@keyframes moverGradiente {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
 }
 
-@keyframes heartbeat {
-  0% { transform: scale(1); box-shadow: inset 0 0 0 rgba(255,255,255,0); }
-  25% { transform: scale(1.05); box-shadow: inset 0 0 10px rgba(255,255,255,0.5); }
-  50% { transform: scale(1); box-shadow: inset 0 0 0 rgba(255,255,255,0); }
+.btn-register:hover {
+    transform: scale(1.05);
 }
 
-/* FOOTER */
+
+
 /* === FOOTER === */
 .footer {
   background-color: #ff7eb9;
@@ -313,3 +318,4 @@ body {
   margin-top: 30px;
   opacity: 0.9;
 }
+

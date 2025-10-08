@@ -210,21 +210,30 @@ body {
 }
 
 .inicio-btn {
-  background-color: #ff66a3;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px;
-  width: 100%;
-  font-size: 15px;
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
+    /* Fondo con degradado */
+    background: linear-gradient(45deg, #c580a8, #dd5f9a);
+    color: white;
+    border: none;
+    border-radius: 6px;
+
+    /* Tamaño y espaciado */
+    padding: 10px;
+    width: 100%;
+    font-size: 15px;
+
+    /* Interacciones */
+    cursor: pointer;
+    transition: all 0.5s ease;
 }
 
 .inicio-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(255, 102, 163, 0.4);
+    /* Efecto de rotación y escalado al pasar el mouse */
+    transform: rotate(5deg) scale(1.1);
+
+    /* Reaplico el mismo degradado para mantener consistencia */
+    background: linear-gradient(45deg, #c580a8, #dd5f9a);
 }
+
 
 /* FOOTER */
 /* === FOOTER === */
