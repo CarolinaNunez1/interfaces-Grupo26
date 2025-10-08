@@ -42,3 +42,4 @@ document.querySelector(".comment-input").addEventListener("keypress", (e) => {
     e.target.value = "";
   }
 });
+
