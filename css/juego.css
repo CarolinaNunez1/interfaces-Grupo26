@@ -149,35 +149,113 @@ h2 {
     opacity: 1;
 }
 
+/*linea navegadora*/
+/* Breadcrumb */
+.breadcrumb {
+  padding: 20px 100px;
+  font-weight: 700;
+  color: #FF76A7;
+  font-size: 15px;
+}
+
+.breadcrumb a {
+  color: #FF76A7;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb span {
+  margin: 0 6px;
+  color: #8E3353;
+}
+
+.breadcrumb .active {
+  color: #FF76A7;
+}
+
+
 /* JUEGO */
 
 .game-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center; 
-  justify-content: center;
-  margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
 }
 
 .game-board {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 600px;  
-  height: 600px;
-  border-radius: 10px;
-  background-color: #863651;
-  overflow: hidden;
+    position: relative;
+    border-radius: 10px;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 600px;   
+    height: 600px;
+    box-sizing: border-box;
 }
 
-/* IMAGEN DEL TABLERO */
+/* Imagen del tablero */
 .game-board img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* BOTON COMPARTIR  */
+.btn-compartir {
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    background-color: transparent; /* Fondo transparente */
+    color: #FF5A76;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    font-family: 'Baloo 2', cursive;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    transition: transform 0.2s ease;
+}
+
+.btn-compartir:hover {
+    transform: scale(1.05);
+}
+
+.btn-compartir img {
+    width: 18px;
+    height: 18px;
+}
+
+/* BOTON AYUDA */
+.btn-ayuda {
+    position: absolute;
+    bottom: 70px;
+    left: 50px;
+    background-color: #FF5A76;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+}
+
+.btn-ayuda:hover {
+    transform: scale(1.05);
 }
 
 /* BOTÓN JUGAR */
@@ -194,7 +272,7 @@ h2 {
   margin-top: 25px;
   overflow: hidden; /* mantiene la animación dentro del botón */
   transition: all 0.3s ease;
-  align-self: center; /* asegura que quede centrado */
+  align-self: center;
 }
 
 /* EFECTO DE BRILLO */
