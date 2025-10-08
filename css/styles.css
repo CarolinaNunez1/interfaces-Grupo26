@@ -642,3 +642,149 @@ h2 {
   flex: 0 0 auto;
 }
 
+/* ESTILOS RESPONSIVOS PARA CELULAR*/
+@media (max-width: 768px) {
+
+  .header {
+    display: flex;
+    flex-direction: row; /* Mantiene todo en una línea */
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap; /* No permite que los elementos bajen */
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .logo img {
+    width: 80px;
+  }
+
+  .search {
+    flex: 1; /* Ocupa el espacio disponible entre logo e iconos */
+    display: flex;
+    justify-content: center;
+  }
+
+  .search input {
+    width: 100%;
+    max-width: 160px; /* evita que crezca demasiado */
+    font-size: 12px;
+    padding: 6px 10px 6px 28px;
+  }
+
+  .home-link {
+    flex-shrink: 0; /* evita que se achique */
+  }
+
+  .home-link img {
+    width: 35px;
+  }
+  /* --- SIDEBAR --- */
+  .sidebar {
+    width: 200px;
+    padding: 15px;
+  }
+
+  .menu li {
+    font-size: 1rem;
+  }
+
+  /* --- CONTENIDO PRINCIPAL --- */
+  .main-content {
+    padding: 15px;
+  }
+
+  .games-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    gap: 12px;
+  }
+
+  .game-card {
+    border-radius: 15px;
+    padding: 8px;
+  }
+
+  .game-card img {
+    border-radius: 10px;
+  }
+
+  .game-card p {
+    font-size: 0.8rem;
+  }
+
+  /* --- SECCIÓN DE JUEGO --- */
+  .game-board {
+    width: 90%;
+    height: auto;
+  }
+
+  .play-btn {
+    padding: 12px 25px;
+    font-size: 16px;
+  }
+
+  /* --- INSTRUCCIONES Y COMENTARIOS --- */
+  .instrucciones,
+  .comentarios-container {
+    width: 95%;
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  .mensaje,
+  .usuario-actual input {
+    width: 100%;
+  }
+
+/* --- FOOTER --- */
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 15px;
+    padding: 20px 10px;
+  }
+
+  .footer-container > * {
+    width: 100%;
+  }
+
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .footer-copy {
+    margin-top: 10px;
+    font-size: 0.8rem;
+  }
+}
+
+/* CELULARES MAS CHICOS*/
+@media (max-width: 480px) {
+  .games-grid {
+    grid-template-columns: 1fr; /* Una sola columna */
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search input {
+    width: 100%;
+  }
+
+  .logo img {
+    width: 90px;
+  }
+
+  .play-btn {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
