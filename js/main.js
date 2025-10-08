@@ -46,3 +46,39 @@ window.addEventListener("load", () => {
     }
   }, 100);
 });
+
+// === CARRUSEL DE JUEGOS ===
+const track = document.querySelector(".carousel-track");
+const nextBtn = document.querySelector(".carousel-btn.next");
+const prevBtn = document.querySelector(".carousel-btn.prev");
+
+if (track && nextBtn && prevBtn) {
+  let index = 0;
+  const cards = document.querySelectorAll(".carousel-track .game-card");
+  const visibleCards = 3; // cantidad visible según ancho
+  const totalCards = cards.length;
+
+  const updateCarousel = () => {
+    const cardWidth = cards[0].offsetWidth + 20; // ancho + gap
+    track.style.transform = `translateX(-${index * cardWidth}px)`;
+  };
+
+  nextBtn.addEventListener("click", () => {
+    if (index < totalCards - visibleCards) index++;
+    else index = 0; // reinicia
+    updateCarousel();
+  });
+
+  prevBtn.addEventListener("click", () => {
+    if (index > 0) index--;
+    else index = totalCards - visibleCards;
+    updateCarousel();
+  });
+
+  // opcional: movimiento automático
+  setInterval(() => {
+    if (index < totalCards - visibleCards) index++;
+    else index = 0;
+    updateCarousel();
+  }, 4000);
+}
