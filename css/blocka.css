@@ -176,199 +176,113 @@ h2 {
   color: #FF76A7;
 }
 
-
-/* JUEGO */
-
-.game-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 0;
+/* CONTENEDOR GENERAL DEL JUEGO */
+.game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #FAEDED; /* Fondo rosa claro */
+  border-radius: 20px;
+  padding: 40px;
+  margin: 50px auto;
+  width: 700px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Baloo 2', cursive;
+  text-align: center;
 }
 
-.game-board {
-    position: relative;
-    border-radius: 10px;
-    padding: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 600px;   
-    height: 600px;
-    box-sizing: border-box;
+/* CONTROLES SUPERIORES*/
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
 }
 
-/* Imagen del tablero */
-.game-board img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-}
-
-/* BOTON COMPARTIR  */
-.btn-compartir {
-    position: absolute;
-    bottom: 50px;
-    right: 50px;
-    background-color: transparent; /* Fondo transparente */
-    color: #FF5A76;
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    font-family: 'Baloo 2', cursive;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    box-shadow: none;
-    transition: transform 0.2s ease;
-}
-
-.btn-compartir:hover {
-    transform: scale(1.05);
-}
-
-.btn-compartir img {
-    width: 18px;
-    height: 18px;
-}
-
-/* BOTON AYUDA */
-.btn-ayuda {
-    position: absolute;
-    bottom: 70px;
-    left: 50px;
-    background-color: #FF5A76;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-family: 'Baloo 2', cursive;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease;
-}
-
-.btn-ayuda:hover {
-    transform: scale(1.05);
-}
-
-/* BOTÓN JUGAR */
-.play-btn {
-  position: relative;
-  background: #FF5A76;
-  border: none;
-  padding: 16px 40px;
-  color: white;
+.controls label {
   font-weight: bold;
-  font-size: 20px;
-  border-radius: 12px;
+  color: #8E3353;
+}
+
+.controls select,
+.controls button {
+  font-family: 'Baloo 2', cursive;
+  border-radius: 10px;
+  border: none;
+  padding: 8px 16px;
+  font-size: 1rem;
   cursor: pointer;
-  margin-top: 25px;
-  overflow: hidden; /* mantiene la animación dentro del botón */
-  transition: all 0.3s ease;
-  align-self: center;
 }
 
-/* EFECTO DE BRILLO */
-.play-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -80px;
-  width: 50px;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.4);
-  transform: skewX(-25deg);
-  transition: left 0.5s ease;
-}
-
-/* ANIMACIÓN AL PASAR EL MOUSE */
-.play-btn:hover::before {
-  left: 120%;
+.play-btn {
+  background-color: #FF5A76;
+  color: #fff;
 }
 
 .play-btn:hover {
-  background: #8e2345;
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(255, 90, 118, 0.4);
+  background-color: #8E3353;
 }
 
-/* === CONTENEDOR DEL JUEGO BLOCKA === */
-
-.container {
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-background-color: #FAEDED; /* Fondo suave rosa pálido */
-border-radius: 20px;
-padding: 40px;
-margin: 50px auto;
-width: 700px;
-max-width: 90%;
-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-font-family: 'Baloo 2', cursive;
-text-align: center;
+#help-btn {
+  background-color: #FF5A76;
+  color: white;
+  transition: background 0.3s ease;
 }
 
-
-.container h1 {
-color: #FF5A76; /* Rosa fuerte */
-font-size: 2rem;
-margin-bottom: 25px;
+#help-btn:hover {
+  background-color: #8E3353;
 }
 
-
-.controls {
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 10px;
-margin-bottom: 20px;
+#timer {
+  font-weight: bold;
+  color: #8E3353;
 }
 
-
-.controls label {
-font-weight: bold;
-color: #8E3353;
+/*TABLERO DEL JUEGO*/
+.board {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  justify-content: center; /* centra el grid horizontalmente */
+  align-items: center;     /* centra el grid verticalmente */
+  margin: 0 auto;
+  width: 400px;
+  height: 400px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
-
-.controls select, .controls button {
-font-family: 'Baloo 2', cursive;
-border-radius: 10px;
-border: none;
-padding: 8px 16px;
-font-size: 1rem;
-cursor: pointer;
+/* Centrar imágenes */
+.board img {
+  display: block;
+  margin: 0 auto;  /* centra horizontalmente */
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover; /* mantiene proporción y recorta si es necesario */
 }
 
-
-.nivel {
-background-color: #FF5A76;
-color: #fff;
+/* PIEZAS DEL TABLERO */
+.piece {
+  width: 100%;
+  height: 100%;
+  background-size: 200% 200%;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
-.help-btn {
-background-color: #FF5A76;
-color: white;
-transition: background 0.3s ease;
-}
-
-.help-btn:hover {
-background-color: #8e2345;
-}
-
-
-.timer {
-font-weight: bold;
-color: #8E3353;
+/*PIEZA FIJA AYUDA */
+.piece.fixed {
+  box-shadow: 0 0 10px #8E3353;
+  border: 2px solid #8E3353;
+  opacity: 0.9;
+  cursor: default;
 }
 
 .instrucciones {

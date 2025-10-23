@@ -17,12 +17,12 @@ if (menuButton && sidebar && overlay) {
   });
 }
 
-
 // === VARIABLES GLOBALES ===
 const board = document.getElementById("board");
 const playBtn = document.getElementById("play-btn");
 const timerSpan = document.getElementById("timer");
 const levelSelect = document.getElementById("level-select");
+const helpBtn = document.getElementById("help-btn");
 
 let pieces = [];
 let rotations = [];
@@ -30,6 +30,13 @@ let timer = null;
 let seconds = 0;
 let isPlaying = false;
 let level = 1;
+
+// === LÍMITES DE TIEMPO POR NIVEL (segundos) ===
+const levelTimeLimits = {
+  1: 120, // Nivel 1: 2 minutos
+  2: 90,  // Nivel 2: 1:30 min
+  3: 60,  // Nivel 3: 1 minuto
+};
 
 // === BANCO DE IMÁGENES ===
 const images = [
@@ -60,6 +67,7 @@ const modalTitle = document.getElementById("modal-title");
 const menuBtn = document.getElementById("menu-btn");
 const nextBtn = document.getElementById("next-btn");
 
+
 // === INICIAR JUEGO ===
 playBtn.addEventListener("click", startGame);
 
@@ -75,6 +83,10 @@ function startGame() {
   const imgSrc = images[Math.floor(Math.random() * images.length)];
   createBoard(imgSrc);
   startTimer();
+
+  helpBtn.disabled = false;
+  helpBtn.style.opacity = "1";
+  helpBtn.style.cursor = "pointer";
 }
 
 // === CREAR TABLERO ===
@@ -144,6 +156,14 @@ function startTimer() {
     const min = String(Math.floor(seconds / 60)).padStart(2, "0");
     const sec = String(seconds % 60).padStart(2, "0");
     timerSpan.textContent = `${min}:${sec}`;
+
+    // Comprobar si se alcanzó el límite
+    if (seconds >= levelTimeLimits[level]) {
+      stopTimer();
+      isPlaying = false;
+      showModal("¡Tiempo agotado! Perdiste el nivel");
+      pieces.forEach((p) => (p.style.pointerEvents = "none"));
+    }
   }, 1000);
 }
 
@@ -170,3 +190,35 @@ nextBtn.addEventListener("click", () => {
   levelSelect.value = level;
   startGame();
 });
+
+// === AYUDITA ===
+helpBtn.addEventListener("click", giveHelp);
+
+function giveHelp() {
+  if (!isPlaying) return;
+
+  const index = rotations.findIndex(
+    (r, i) => r !== 0 && !pieces[i].classList.contains("fixed")
+  );
+  if (index === -1) {
+    alert("No hay piezas para ayudar");
+    return;
+  }
+
+  rotations[index] = 0;
+  pieces[index].style.transform = "rotate(0deg)";
+  pieces[index].classList.add("fixed");
+  pieces[index].style.border = "2px solid #8E3353";
+  pieces[index].style.cursor = "default";
+  pieces[index].replaceWith(pieces[index].cloneNode(true));
+
+  // Sumar +5 segundos de ayuda y respetar límite máximo
+  seconds = Math.min(seconds + 5, levelTimeLimits[level]);
+  helpBtn.disabled = true;
+  helpBtn.style.opacity = "0.6";
+  helpBtn.style.cursor = "not-allowed";
+}
+
+
+
+
