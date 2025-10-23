@@ -105,8 +105,8 @@ function createBoard(imgSrc) {
     if (i === 3) piece.style.backgroundPosition = "100% 100%";
 
     // Filtro según nivel
-    if (level === 1) piece.style.filter = "grayscale(100%)";
-    if (level === 2) piece.style.filter = "brightness(70%)";
+    if (level === 1) piece.style.filter = "brightness(70%)";
+    if (level === 2) piece.style.filter = "grayscale(100%)";
     if (level === 3) piece.style.filter = "invert(100%)";
 
     let rot = [0, 90, 180, 270][Math.floor(Math.random() * 4)];
@@ -190,35 +190,4 @@ nextBtn.addEventListener("click", () => {
   levelSelect.value = level;
   startGame();
 });
-
-// === AYUDITA ===
-helpBtn.addEventListener("click", giveHelp);
-
-function giveHelp() {
-  if (!isPlaying) return;
-
-  const index = rotations.findIndex(
-    (r, i) => r !== 0 && !pieces[i].classList.contains("fixed")
-  );
-  if (index === -1) {
-    alert("No hay piezas para ayudar");
-    return;
-  }
-
-  rotations[index] = 0;
-  pieces[index].style.transform = "rotate(0deg)";
-  pieces[index].classList.add("fixed");
-  pieces[index].style.border = "2px solid #8E3353";
-  pieces[index].style.cursor = "default";
-  pieces[index].replaceWith(pieces[index].cloneNode(true));
-
-  // Sumar +5 segundos de ayuda y respetar límite máximo
-  seconds = Math.min(seconds + 5, levelTimeLimits[level]);
-  helpBtn.disabled = true;
-  helpBtn.style.opacity = "0.6";
-  helpBtn.style.cursor = "not-allowed";
-}
-
-
-
 
