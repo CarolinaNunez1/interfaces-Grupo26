@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pinki - Iniciar Sesión</title>
+  <title>Pinki - Blocka</title>
   <link rel="stylesheet" href="../css/blocka.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -57,33 +57,20 @@
     <div class="content-bar"></div>
     <!-- Juego -->
     <main>
-        <div class="container">
-            <h1>BLOCKA</h1>
+        <section class="game-area">
+      <div class="controls">
+        <label for="level-select">Nivel:</label>
+        <select id="level-select">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+        <button id="play-btn">Comenzar</button>
+        <span id="timer">00:00</span>
+      </div>
 
-
-            <div class="controls">
-            <label for="nivel">Nivel:</label>
-            <select class="nivel">
-            <option value="1">Fácil</option>
-            <option value="2">Medio</option>
-            <option value="3">Difícil</option>
-            </select>
-            <button class="help-btn">Ayuda (+5s)</button>
-            <span class="timer">Tiempo: 0s</span>
-            </div>
-
-
-            <div id="board"></div>
-
-
-            <div class="thumbnail-container">
-            <img id="preview" alt="Vista previa del nivel" />
-            </div>
-
-            <button class="play-btn">Jugar</button>
-            </div>
-        </div>
-
+      <div id="board" class="board"></div>
+    </section>
         <!--Instruccion de juego-->
         <div class="instrucciones">
             <h2>Blocka</h2>

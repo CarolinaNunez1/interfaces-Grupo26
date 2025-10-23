@@ -17,107 +17,156 @@ if (menuButton && sidebar && overlay) {
   });
 }
 
-// --- COMENTARIOS ---
-const commentInput = document.querySelector(".comment-input");
-const commentsContainer = document.querySelector(".comments");
 
-if (commentInput && commentsContainer) {
-  commentInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter" && e.target.value.trim() !== "") {
-      const commentBox = document.createElement("div");
-      commentBox.classList.add("comment");
-      commentBox.innerHTML = `<strong>Tú:</strong> ${e.target.value}`;
-      commentsContainer.insertBefore(commentBox, commentInput);
-      e.target.value = "";
-    }
-  });
+// === VARIABLES GLOBALES ===
+const board = document.getElementById("board");
+const playBtn = document.getElementById("play-btn");
+const timerSpan = document.getElementById("timer");
+const levelSelect = document.getElementById("level-select");
+
+let pieces = [];
+let rotations = [];
+let timer = null;
+let seconds = 0;
+let isPlaying = false;
+let level = 1;
+
+// === BANCO DE IMÁGENES ===
+const images = [
+  "../img/img1.png",
+  "../img/img2.png",
+  "../img/img3.png",
+  "../img/img4.png",
+  "../img/img5.png",
+  "../img/img6.png",
+];
+
+// === MODAL ===
+const modal = document.createElement("div");
+modal.id = "modal";
+modal.classList.add("hidden");
+modal.innerHTML = `
+  <div class="modal-content">
+    <h2 id="modal-title"></h2>
+    <div class="modal-buttons">
+      <button id="menu-btn">Menú Principal</button>
+      <button id="next-btn">Siguiente Nivel</button>
+    </div>
+  </div>
+`;
+document.body.appendChild(modal);
+
+const modalTitle = document.getElementById("modal-title");
+const menuBtn = document.getElementById("menu-btn");
+const nextBtn = document.getElementById("next-btn");
+
+// === INICIAR JUEGO ===
+playBtn.addEventListener("click", startGame);
+
+function startGame() {
+  if (isPlaying) return;
+
+  level = parseInt(levelSelect.value);
+  isPlaying = true;
+  seconds = 0;
+  timerSpan.textContent = "00:00";
+  board.innerHTML = "";
+
+  const imgSrc = images[Math.floor(Math.random() * images.length)];
+  createBoard(imgSrc);
+  startTimer();
 }
-// Simular comentario
-document.querySelector(".comment-input").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    const commentBox = document.createElement("div");
-    commentBox.classList.add("comment");
-    commentBox.innerHTML = `<strong>Tú:</strong> ${e.target.value}`;
-    document.querySelector(".comments").insertBefore(commentBox, e.target);
-    e.target.value = "";
+
+// === CREAR TABLERO ===
+function createBoard(imgSrc) {
+  pieces = [];
+  rotations = [];
+
+  for (let i = 0; i < 4; i++) {
+    const piece = document.createElement("div");
+    piece.classList.add("piece");
+    piece.style.backgroundImage = `url(${imgSrc})`;
+
+    if (i === 0) piece.style.backgroundPosition = "0 0";
+    if (i === 1) piece.style.backgroundPosition = "100% 0";
+    if (i === 2) piece.style.backgroundPosition = "0 100%";
+    if (i === 3) piece.style.backgroundPosition = "100% 100%";
+
+    // Filtro según nivel
+    if (level === 1) piece.style.filter = "grayscale(100%)";
+    if (level === 2) piece.style.filter = "brightness(70%)";
+    if (level === 3) piece.style.filter = "invert(100%)";
+
+    let rot = [0, 90, 180, 270][Math.floor(Math.random() * 4)];
+    piece.style.transform = `rotate(${rot}deg)`;
+    rotations.push(rot);
+
+    // Click izquierdo/derecho
+    piece.addEventListener("click", () => rotatePiece(piece, i, "left"));
+    piece.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      rotatePiece(piece, i, "right");
+    });
+
+    board.appendChild(piece);
+    pieces.push(piece);
   }
-});
-
-// JUEGO
-const board = document.getElementById('board');
-const div = document.createElement('div');
-div.classList.add('piece');
-div.style.backgroundImage = `url(${img})`;
-
-
-const x = (i % size) * -100;
-const y = Math.floor(i / size) * -100;
-div.style.backgroundPosition = `${x}px ${y}px`;
-
-
-div.dataset.rotation = Math.floor(Math.random() * 4) * 90;
-div.style.transform = `rotate(${div.dataset.rotation}deg)`;
-
-
-div.addEventListener('click', () => rotatePiece(div, 90));
-div.addEventListener('contextmenu', (e) => {
-e.preventDefault();
-rotatePiece(div, -90);
-});
-
-
-board.appendChild(div);
-pieces.push(div);
-
-
-function rotatePiece(piece, deg) {
-if (!isPlaying) return;
-const newRotation = (parseInt(piece.dataset.rotation) + deg + 360) % 360;
-piece.dataset.rotation = newRotation;
-piece.style.transform = `rotate(${newRotation}deg)`;
-
-
-checkWin();
 }
 
+// === ROTAR PIEZA ===
+function rotatePiece(piece, index, direction) {
+  if (!isPlaying) return;
 
+  rotations[index] =
+    direction === "right"
+      ? (rotations[index] + 90) % 360
+      : (rotations[index] + 270) % 360;
+
+  piece.style.transform = `rotate(${rotations[index]}deg)`;
+  checkWin();
+}
+
+// === COMPROBAR VICTORIA ===
 function checkWin() {
-const allCorrect = pieces.every(p => parseInt(p.dataset.rotation) === 0);
-if (allCorrect) {
-clearInterval(timer);
-modalTitle.textContent = '¡Ganaste!';
-modal.classList.remove('hidden');
-isPlaying = false;
-}
-}
-
-
-function resetTimer() {
-clearInterval(timer);
-timeLeft = 60 - (level * 10);
-timerSpan.textContent = `Tiempo: ${timeLeft}s`;
+  if (rotations.every((r) => r === 0)) {
+    stopTimer();
+    isPlaying = false;
+    pieces.forEach((p) => (p.style.filter = "none"));
+    showModal("¡Ganaste!");
+  }
 }
 
-
+// === TEMPORIZADOR ===
 function startTimer() {
-timer = setInterval(() => {
-timeLeft--;
-timerSpan.textContent = `Tiempo: ${timeLeft}s`;
-if (timeLeft <= 0) {
-clearInterval(timer);
-modalTitle.textContent = '¡Se acabó el tiempo!';
-modal.classList.remove('hidden');
-isPlaying = false;
-}
-}, 1000);
+  clearInterval(timer);
+  timer = setInterval(() => {
+    seconds++;
+    const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const sec = String(seconds % 60).padStart(2, "0");
+    timerSpan.textContent = `${min}:${sec}`;
+  }, 1000);
 }
 
-
-function useHelp() {
-if (!isPlaying) return;
-timeLeft += 5;
-timerSpan.textContent = `Tiempo: ${timeLeft}s`;
-const piece = pieces[Math.floor(Math.random() * pieces.length)];
-piece.dataset.rotation = 0;
-piece.style.transform = 'rotate(0deg)';
+function stopTimer() {
+  clearInterval(timer);
 }
+
+// === MODAL ===
+function showModal(text) {
+  modalTitle.textContent = text;
+  modal.classList.remove("hidden");
+}
+
+menuBtn.addEventListener("click", () => {
+  modal.classList.add("hidden");
+  isPlaying = false;
+  board.innerHTML = "";
+  timerSpan.textContent = "00:00";
+});
+
+nextBtn.addEventListener("click", () => {
+  modal.classList.add("hidden");
+  level = Math.min(level + 1, 3);
+  levelSelect.value = level;
+  startGame();
+});

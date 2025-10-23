@@ -556,3 +556,120 @@ color: #8E3353;
   margin-top: 30px;
   opacity: 0.9;
 }
+
+/* Tablero del juego */
+#board {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  grid-template-rows: repeat(2, 150px);
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.piece {
+  width: 150px;
+  height: 150px;
+  background-size: 300px 300px;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding: 30px;
+}
+
+.game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: #bee1c0;
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+
+#play-btn {
+  background: #f34680;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#board {
+  width: 400px;
+  height: 400px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 5px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.piece {
+  background-size: 200% 200%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+/* === MODAL DE GANADOR === */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff8c8;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  background: #f34680;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.modal-buttons button:hover {
+  transform: scale(1.1);
+}
