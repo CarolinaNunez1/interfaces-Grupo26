@@ -1,0 +1,596 @@
+/* === ESTILOS GENERALES === */
+body {
+    margin: 0;
+    font-family: 'Baloo 2', cursive;
+    background-color: #ffffff; /* Fondo blanco */
+    color: #333;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin: 20px 0;
+    color: #8D0032; /* Rosa */
+}
+
+/* === HEADER === */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #fff8c8;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.logo img {
+    width: 150px;
+    height: auto;
+}
+
+.search input {
+  background: #F48FB1 url("../img/lupa.png") no-repeat 8px center; /* fondo rosa + lupa */
+  background-size: 16px; /* tamaño de la lupa */
+  border: none;
+  padding: 8px 12px 8px 32px; /* padding extra a la izquierda para que no tape el texto */
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  width: 180px;
+}
+
+.home-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: #ff69b4; /* Rosa */
+    font-weight: bold;
+}
+
+.home-link img {
+    width: 70px;
+}
+
+/* === MENÚ LATERAL === */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;              
+  height: 100%;
+  background-color: #BEE1C0; /* Rosa fuerte */
+  color: #f34680;
+  font-weight: bold;
+  transform: translateX(-100%); /* Oculto al inicio */
+  transition: transform 0.3s ease-in-out;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 1001; /* Encima del overlay */
+}
+
+/* Cuando el menú está activo */
+.sidebar.active {
+  transform: translateX(0);
+}
+
+/* Contenido del usuario */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.user-info img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Lista del menú */
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.menu li:hover {
+  background-color: rgba(49, 51, 50, 0.2);
+  border-radius: 10px;
+}
+
+.menu-button img {
+    width: 30px;   /* tamaño del ícono */
+    height: auto;
+}
+
+.menu-button {
+    background: none;  /* sin fondo */
+    border: none;      /* sin borde */
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === OVERLAY (fondo oscuro) === */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000; /* Debajo del menú */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/*linea navegadora*/
+/* Breadcrumb */
+.breadcrumb {
+  padding: 20px 100px;
+  font-weight: 700;
+  color: #FF76A7;
+  font-size: 15px;
+}
+
+.breadcrumb a {
+  color: #FF76A7;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb span {
+  margin: 0 6px;
+  color: #8E3353;
+}
+
+.breadcrumb .active {
+  color: #FF76A7;
+}
+
+/* === ÁREA DEL JUEGO === */
+.game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #FAEDED; /* Rosa claro */
+  border-radius: 20px;
+  padding: 40px;
+  margin: 60px auto;
+  width: 700px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.game-area h1 {
+  color: #8E3353;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+/* === HUD (Timer) === */
+#hud {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+#timer {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #8E3353;
+}
+
+/* === TABLERO === */
+#board {
+  display: grid;
+  grid-template-columns: repeat(7, 70px);
+  grid-template-rows: repeat(7, 70px);
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 15px;
+  border-radius: 15px;
+
+  /* Imagen de fondo del tablero */
+  background-image: url("../img/fondo-tablero.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* === CELDAS === */
+.cell {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.cell.empty {
+  background-color: transparent;
+  cursor: default;
+}
+
+.cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* ✅ hace que la imagen llene la ficha sin deformarse */
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Seleccionada */
+.cell.selected {
+  outline: 3px solid #FF5A76;
+  transform: scale(1.1);
+}
+
+/* Eliminada (animación) */
+.cell.eliminada {
+  background-color: #8E3353 !important;
+  transition: background-color 0.3s ease;
+}
+
+/* === HINTS (destinos posibles) === */
+.cell.hint {
+  position: relative;
+  animation: pulse 1s infinite;
+  background-color: rgba(255, 182, 193, 0.6);
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+/* === BOTÓN REINICIAR === */
+#controls {
+  margin-top: 25px;
+}
+
+#restart {
+  position: relative;
+  background: #FF5A76;
+  border: none;
+  padding: 16px 40px;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 25px;
+  overflow: hidden; /* mantiene la animación dentro del botón */
+  transition: all 0.3s ease;
+  align-self: center;
+}
+
+#restart:hover {
+  background: #8e2345;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 90, 118, 0.4);
+}
+
+/* EFECTO DE BRILLO */
+#restart::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80px;
+  width: 50px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+
+/* ANIMACIÓN AL PASAR EL MOUSE */
+#restart:hover::before {
+  left: 120%;
+}
+
+/* === SECCIÓN DE INSTRUCCIONES === */
+.instrucciones {
+  background-color: #FAEDED;
+  border-radius: 10px;
+  padding: 30px;
+  margin: 50px auto;
+  width: 80%;
+  max-width: 700px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-family: 'Baloo 2', cursive;
+}
+
+.instrucciones h2 {
+  color: #FF5A76;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+}
+
+.instrucciones p {
+  font-size: 1rem;
+  color: #2c2c2c;
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+
+.instrucciones h3 {
+  color: #FF5A76;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.instrucciones ul {
+  padding-left: 25px;
+  list-style-type: disc;
+}
+
+.instrucciones li {
+  color: #222;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* === COMENTARIOS === */
+.comentarios-container {
+  background-color: #FAEDED;
+  border-radius: 15px;
+  padding: 30px;
+  margin: 40px auto;
+  width: 90%;
+  max-width: 700px;
+  font-family: 'Baloo 2', cursive;
+}
+
+.comentarios-container h2 {
+  color: #FF5A76;
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.comentario {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.comentario img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.comentario-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.nombre {
+  margin: 0 0 5px 0;
+  font-weight: bold;
+  color: #8E3353;
+  font-size: 0.95rem;
+}
+
+.mensaje {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #D1D1D1;
+  padding: 6px 12px;
+  width: 550px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  font-size: 0.9rem;
+  color: #8E3353;
+}
+
+.usuario-actual input {
+  border: 1px solid #D1D1D1;
+  border-radius: 8px;
+  padding: 6px 12px;
+  width: 550px;
+  height: 28px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.9rem;
+}
+
+.usuario-actual input::placeholder {
+  color: #999;
+}
+
+/* === CONTENEDORES Y CONTROLES DEL JUEGO === */
+.container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding: 30px;
+}
+
+.game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: #bee1c0;
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+
+#play-btn {
+  background: #f34680;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* === MODAL DE GANADOR === */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff8c8;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  background: #f34680;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.modal-buttons button:hover {
+  transform: scale(1.1);
+}
+
+/* === FOOTER === */
+.footer {
+  background-color: #ff7eb9;
+  color: white;
+  padding: 40px 20px 20px;
+  text-align: left;
+  font-family: 'Baloo 2', cursive;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-column h3 {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin: 6px 0;
+}
+
+.footer-column ul li a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: 0.3s;
+}
+
+.footer-column ul li a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.social-icons {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.social-icons a img {
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transition: transform 0.3s ease;
+}
+
+.social-icons a img:hover {
+  transform: scale(1.2);
+}
+
+.footer-copy {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 30px;
+  opacity: 0.9;
+}
