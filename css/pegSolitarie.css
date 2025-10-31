@@ -289,7 +289,7 @@ h2 {
   margin-top: 25px;
 }
 
-#restart {
+#restart{
   position: relative;
   background: #FF5A76;
   border: none;
@@ -593,4 +593,43 @@ h2 {
   font-size: 14px;
   margin-top: 30px;
   opacity: 0.9;
+}
+#start{
+  position: relative;
+  background: #FF5A76;
+  border: none;
+  padding: 16px 40px;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 25px;
+  overflow: hidden; /* mantiene la animación dentro del botón */
+  transition: all 0.3s ease;
+  align-self: center;
+}
+
+#start:hover {
+  background: #8e2345;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 90, 118, 0.4);
+}
+
+/* EFECTO DE BRILLO */
+#start::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80px;
+  width: 50px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+
+/* ANIMACIÓN AL PASAR EL MOUSE */
+#start:hover::before {
+  left: 120%;
 }

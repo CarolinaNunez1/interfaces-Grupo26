@@ -51,6 +51,7 @@ let board = []; // matriz ROWS x COLS con -1/0/1
 let boardEl = document.getElementById("board");
 let timerEl = document.getElementById("timer");
 let restartBtn = document.getElementById("restart");
+let startBtn = document.getElementById("start");
 let selected = null; // {r,c,cellEl,imgEl}
 let floating = null;  // elemento img floter mientras arrastramos
 let timeLimit = 300; // segundos por defecto
@@ -140,19 +141,24 @@ function createBoardDOM(){
   updateStatus();
 }
 
-/* reconstruye modelo y DOM desde START_MASK */
-function resetBoard(){
+function resetBoard() {
   board = cloneMask(START_MASK);
-  // convertir -1,-1,1,0 a -1/1/0 (ya están)
   createBoardDOM();
   clearSelection();
   stopTimer();
+
   timeLimit = parseInt(document.getElementById("timeLimit")?.value || 300, 10);
   if (isNaN(timeLimit) || timeLimit <= 0) timeLimit = 300;
+
   timeLeft = timeLimit;
   timerEl.textContent = "Tiempo: " + formatTime(timeLeft);
-  startTimer();
+  updateStatus();
 }
+
+startBtn?.addEventListener("click", () => {
+  stopTimer(); // por si se reinicia varias veces
+  startTimer();
+});
 
 /* ---------- SELECCIÓN, HINTS y DRAG & DROP ---------- */
 
@@ -353,15 +359,13 @@ document.getElementById("timeLimit")?.addEventListener("change", (e)=>{
 
 /* ---------- INICIALIZACIÓN ---------- */
 function init(){
-  // crear campo de pegsLeft si no existe (para compatibilidad con el sidebar anterior)
   if (!document.getElementById("pegsLeft")){
     const info = document.createElement("div");
     info.id = "pegsLeft";
     info.style.display = "none";
     document.body.appendChild(info);
   }
-  resetBoard();
+  resetBoard(); // prepara el tablero, pero no arranca el timer
 }
 
-/* arrancar */
-init();
+
