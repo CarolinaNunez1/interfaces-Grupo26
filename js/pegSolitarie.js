@@ -368,4 +368,32 @@ function init(){
   resetBoard(); // prepara el tablero, pero no arranca el timer
 }
 
+//ELEGIR COLOR DE LAS FICHAS
+let colorSeleccionado = "#FF5A76"; // color inicial
+
+document.querySelectorAll(".color-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    // Quita selección previa
+    document.querySelectorAll(".color-btn").forEach(b => b.classList.remove("selected"));
+    e.currentTarget.classList.add("selected");
+
+    // Nuevo color elegido
+    colorSeleccionado = e.currentTarget.dataset.color;
+
+    // Cambia color de las fichas (efecto de resplandor)
+    document.querySelectorAll(".cell img").forEach(img => {
+      img.style.filter = `drop-shadow(0 0 6px ${colorSeleccionado}) saturate(1.8)`;
+    });
+
+    // Cambia el fondo del tablero para combinar
+    const board = document.getElementById("board");
+    board.style.backgroundColor = colorSeleccionado;
+
+    // Ajusta el gradiente de huecos para que contraste
+    board.style.backgroundImage =
+      `radial-gradient(circle 28px at center, rgba(255,255,255,0.6) 0%, ${colorSeleccionado} 80%, transparent 81%)`;
+  });
+});
+
+
 

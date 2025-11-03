@@ -223,7 +223,7 @@ h2 {
   border-radius: 15px;
 
   /* Fondo del tablero con "huecos" oscuros */
-  background-color: #daacc2; /* color base madera */
+  background-color: #8E3353; /* color base madera */
   background-image:
     radial-gradient(circle 28px at center, #e9bfc5 0%, #8a2748 80%, transparent 81%);
   background-size: 76px 76px; /* coincide con cada espacio del grid */
@@ -282,6 +282,60 @@ h2 {
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+/*COLOR DE FICHAS*/
+#color-picker {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+#color-picker p {
+  color: #8E3353;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.color-options {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.color-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 3px solid #8E3353;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+}
+
+/* Efecto hover */
+.color-btn:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Sombras específicas */
+.color-btn[style*="#FF5A76"] {
+  box-shadow: 0 0 8px rgba(255, 90, 118, 0.6);
+}
+
+.color-btn[style*="white"] {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.color-btn[style*="#8E3353"] {
+  box-shadow: 0 0 8px rgba(142, 51, 83, 0.6);
+}
+
+/* Estado seleccionado */
+.color-btn.selected {
+  border: 3px solid white;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+  transform: scale(1.25);
 }
 
 /* === BOTÓN REINICIAR === */
