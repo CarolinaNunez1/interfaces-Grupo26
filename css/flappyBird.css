@@ -279,46 +279,137 @@ h2 {
   100% { transform: translateX(-50%); }
 }
 
-/* Pájaro */
+
+
+/* Pájaro (forma mejorada con pico, ojo, mejilla y alas) */
 #bird {
   position: absolute;
-  width: 50px;
-  height: 40px;
+  width: 46px;
+  height: 36px;
   left: 120px;
   top: 200px;
-  background: #FFD966;
+  background: linear-gradient(180deg, #FFD966 0%, #FFC34D 100%);
+  border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%;
+  box-shadow: inset -6px -4px 0 rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.08);
+  z-index: 20;
+  transform-origin: 50% 50%;
+  transition: transform 200ms linear;
+  will-change: transform, top;
+  display: block;
+  overflow: visible;
+}
+
+/* Pico (triángulo) */
+#bird::before{
+  content: "";
+  position: absolute;
+  left: 34px;
+  top: 16px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid #FF9F3B;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  transform: rotate(18deg);
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.08));
+}
+
+/* Ojo + pupila se mantiene como pseudo-elemento */
+#bird::after{
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 8px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  animation: flap 0.6s infinite;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95) 0 28%, transparent 29%),
+    radial-gradient(circle at 60% 60%, #222 0 42%, transparent 43%),
+    #ffffff;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  z-index: 22;
 }
 
-@keyframes flap {
-  0% { transform: rotate(-10deg); }
-  50% { transform: rotate(5deg); }
-  100% { transform: rotate(-10deg); }
+/* Mejilla */
+#bird .cheek,
+#bird > .cheek {
+  position: absolute;
+  left: 12px;
+  top: 18px;
+  width: 10px;
+  height: 6px;
+  background: rgba(255,113,138,0.22);
+  border-radius: 6px;
+  z-index: 21;
+  filter: blur(.2px);
 }
 
-/* Tubos */
+/* Alas (dos elementos internos que se mueven con la animación de aleteo) */
+#bird .wing {
+  position: absolute;
+  width: 20px;
+  height: 12px;
+  background: linear-gradient(180deg, #FFD966, #FFCC66);
+  border-radius: 50%;
+  top: 12px;
+  z-index: 10;
+  transform-origin: 50% 50%;
+  box-shadow: inset -4px -2px 0 rgba(0,0,0,0.06);
+  transition: transform 120ms linear;
+  pointer-events: none;
+}
+#bird .wing.left { left: -8px; transform: rotate(-20deg); }
+#bird .wing.right { left: 22px; transform: rotate(12deg); }
+
+/* clase aplicada al flap (cuando el jugador toca) */
+#bird.flap .wing.left { transform: rotate(-45deg) translate(-2px, -6px); }
+#bird.flap .wing.right { transform: rotate(35deg) translate(0px, -6px); }
+
+/* animación cuando choca (se cae girando) */
+#bird.crash {
+  animation: crashFall 900ms ease-in forwards;
+}
+@keyframes crashFall {
+  0%   { transform: rotate(0deg) translateY(0); opacity: 1; }
+  40%  { transform: rotate(40deg) translateY(40px); opacity: 1; }
+  100% { transform: rotate(90deg) translateY(600px); opacity: 0.9; }
+}
+
+/* Tubos (forma y tapa ya presentes — se respetan) */
 .pipe {
   position: absolute;
   width: 80px;
-  background: linear-gradient(#2ecc71,#1e8449);
-  border-radius: 10px;
+  background: linear-gradient(180deg, #1fb65a 0%, #1e8449 100%);
+  border-radius: 6px;
+  box-shadow: inset -10px 0 20px rgba(0,0,0,0.12), 0 6px 8px rgba(0,0,0,0.15);
+  overflow: visible;
 }
-
-/* Puntaje */
-#score {
+.pipe::after{
+  content: "";
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(255,255,255,0.85);
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-weight: bold;
-  color: #8E3353;
-  font-size: 20px;
+  left: 10px;
+  top: 8px;
+  right: 10px;
+  bottom: 8px;
+  border-radius: 4px;
+  box-shadow: inset 6px 0 18px rgba(255,255,255,0.06);
+  pointer-events: none;
 }
+.pipe::before{
+  content: "";
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  height: 28px;
+  background: linear-gradient(180deg, #2ea64a 0%, #1b6b39 100%);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.22);
+}
+.pipe.top::before{ top: -28px; bottom: auto; border-radius: 8px 8px 6px 6px; }
+.pipe.bottom::before{ bottom: -28px; top: auto; border-radius: 6px 6px 8px 8px; }
 
-/* Game Over */
+/* overlay de fin */
 #gameOver {
   position: absolute;
   inset: 0;
@@ -330,16 +421,9 @@ h2 {
   color: white;
   z-index: 30;
 }
+#gameOver.show { display: flex; }
 
-#gameOver button {
-  background: #FF5A76;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
+
 
 /* === SECCIÓN DE INSTRUCCIONES === */
 .instrucciones {

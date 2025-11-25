@@ -56,34 +56,43 @@
 
     <div class="content-bar"></div>
     <!-- Juego -->
-    <main>
-        <div class="game-area" id="game">
+   <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flappy - Registro</title>
+  <link rel="stylesheet" href="css/flappyBird.css" />
+</head>
+<body>
+  <div class="game-area">
+    <div class="controls">
+      <button id="reset-btn">Reiniciar</button>
+      <div id="timer">00:00</div>
+      <div id="score">Puntos: 0</div>
+    </div>
 
-            <div class="game-runner">
+    <div class="game-runner" id="runner">
+      <div id="bird" aria-hidden="true">
+        <span class="wing left"></span>
+        <span class="wing right"></span>
+        <span class="cheek"></span>
+      </div>
 
-            <!-- Capas Parallax -->
-            <div class="layer layer1"></div>
-            <div class="layer layer2"></div>
-            <div class="layer layer3"></div>
-            <div class="layer layer4"></div>
+      <!-- contenedor de tubos -->
+      <div id="pipes"></div>
 
-            <div id="world"></div>
+      <div id="gameOver" aria-hidden="true">
+        <h2 id="overTitle">Game Over</h2>
+        <p id="overMsg"></p>
+        <button id="restart">Volver a jugar</button>
+      </div>
+    </div>
+  </div>
 
-            <!-- Pájaro -->
-            <div id="bird"></div>
-
-            <!-- Puntaje -->
-            <div id="score">0</div>
-
-            <!-- Game Over -->
-            <div id="gameOver">
-                <h1>GAME OVER</h1>
-                <button onclick="location.reload()">Reiniciar</button>
-            </div>
-
-            </div>
-        </div>
-    </main>
+  <script src="js/flappy.js"></script>
+</body>
+</html>
         <!--Instruccion de juego-->
         <div class="instrucciones">
             <h2>Flappy Bird</h2>
