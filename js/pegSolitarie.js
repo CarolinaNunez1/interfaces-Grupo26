@@ -32,7 +32,9 @@ const START_MASK = [
   [ -1, -1, 1, 1, 1, -1, -1 ]
 ];
 
-/* imagen de ficha como data-url SVG (cumple lo de 'imagen en lugar de color sólido') */
+let gameRunning = false;
+
+/* imagen de ficha como data-url SVG */
 const PEG_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
      <defs>
@@ -47,14 +49,14 @@ const PEG_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
 );
 
 /* ---------- ESTADO ---------- */
-let board = []; // matriz ROWS x COLS con -1/0/1
+let board = [];
 let boardEl = document.getElementById("board");
 let timerEl = document.getElementById("timer");
 let restartBtn = document.getElementById("restart");
 let startBtn = document.getElementById("start");
-let selected = null; // {r,c,cellEl,imgEl}
-let floating = null;  // elemento img floter mientras arrastramos
-let timeLimit = 300; // segundos por defecto
+let selected = null;
+let floating = null;
+let timeLimit = 300;
 let timeLeft = timeLimit;
 let timerInterval = null;
 
@@ -62,14 +64,14 @@ let timerInterval = null;
 function cloneMask(mask){ return mask.map(row => row.slice()); }
 function inBounds(r,c){ return r>=0 && r<ROWS && c>=0 && c<COLS; }
 
-/* comprueba movimientos válidos desde (r,c): devuelve array de destinos [{r,c,midR,midC}] */
+/* comprueba movimientos válidos desde (r,c) */
 function validMovesFrom(r,c){
   const moves = [];
   if (!inBounds(r,c) || board[r][c] !== 1) return moves;
   const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
   for (const [dr,dc] of dirs){
-    const r1 = r + dr, c1 = c + dc;       // casilla adyacente (debe tener ficha)
-    const r2 = r + dr*2, c2 = c + dc*2;   // destino (debe existir y estar vacío)
+    const r1 = r + dr, c1 = c + dc;
+    const r2 = r + dr*2, c2 = c + dc*2;
     if (inBounds(r1,c1) && inBounds(r2,c2) &&
         board[r1][c1] === 1 && board[r2][c2] === 0){
       moves.push({r:r2,c:c2, midR:r1, midC:c1});
@@ -78,7 +80,6 @@ function validMovesFrom(r,c){
   return moves;
 }
 
-/* devuelve true si existe al menos un movimiento en el tablero */
 function anyMovesAvailable(){
   for (let r=0;r<ROWS;r++){
     for (let c=0;c<COLS;c++){
@@ -88,14 +89,12 @@ function anyMovesAvailable(){
   return false;
 }
 
-/* actualiza contador de fichas y timer visual */
 function updateStatus(){
   const pegs = board.flat().filter(x => x===1).length;
   const leftEl = document.getElementById("pegsLeft");
   if (leftEl) leftEl.textContent = pegs;
 }
 
-/* formato mm:ss */
 function formatTime(s){
   const mm = String(Math.floor(s/60)).padStart(2,'0');
   const ss = String(s%60).padStart(2,'0');
@@ -116,23 +115,19 @@ function createBoardDOM(){
       cell.dataset.c = c;
 
       if (board[r][c] === -1){
-        // celda inválida: hacemos transparente y dejamos sin eventos
         cell.classList.add("empty");
-        cell.style.visibility = "hidden"; // opcional: ocultar las posiciones inválidas
+        cell.style.visibility = "hidden";
       } else {
-        // agujero visual: si está vacía usamos clase empty (tu CSS lo maneja)
         if (board[r][c] === 0){
           cell.classList.add("empty");
         } else if (board[r][c] === 1){
-          // agregar img
           const img = document.createElement("img");
           img.src = "../img/image.png";
           img.draggable = false;
           img.className = "peg-img";
-          // anidamos la imagen dentro de la cell para mantener el layout
+          img.style.filter = `drop-shadow(0 0 6px ${colorSeleccionado}) saturate(1.8)`;
           cell.appendChild(img);
         }
-        // añadimos eventos pointer para selección y drag
         cell.addEventListener("pointerdown", onPointerDownCell);
       }
       boardEl.appendChild(cell);
@@ -153,15 +148,16 @@ function resetBoard() {
   timeLeft = timeLimit;
   timerEl.textContent = "Tiempo: " + formatTime(timeLeft);
   updateStatus();
+  gameRunning = false;
 }
 
+/* ---------- INICIAR = REINICIAR + INICIAR TIMER ---------- */
 startBtn?.addEventListener("click", () => {
-  stopTimer(); // por si se reinicia varias veces
+  resetBoard();
   startTimer();
 });
 
 /* ---------- SELECCIÓN, HINTS y DRAG & DROP ---------- */
-
 function clearHints(){
   const prev = boardEl.querySelectorAll(".cell.hint");
   prev.forEach(x => x.classList.remove("hint"));
@@ -183,7 +179,6 @@ function showHintsFor(r,c){
   }
 }
 
-/* crea img flotante usada al arrastrar */
 function createFloatingImg(src, x, y){
   removeFloating();
   const img = document.createElement("img");
@@ -199,11 +194,13 @@ function createFloatingImg(src, x, y){
   floating = img;
   return img;
 }
+
 function moveFloating(x,y){
   if (!floating) return;
   floating.style.left = (x - 30) + "px";
   floating.style.top  = (y - 30) + "px";
 }
+
 function removeFloating(){
   if (floating){
     floating.remove();
@@ -211,20 +208,17 @@ function removeFloating(){
   }
 }
 
-/* procesa la ejecución de un movimiento: desde (sr,sc) a (dr,dc) con medio (mr,mc) */
 function executeMove(sr,sc, dr,dc, mr,mc){
-  // actualizar modelo
   board[sr][sc] = 0;
   board[mr][mc] = 0;
   board[dr][dc] = 1;
-  // actualizar DOM: re-render sólo las celdas afectadas para evitar romper animaciones
+
   const srcCell = boardEl.querySelector(`.cell[data-r='${sr}'][data-c='${sc}']`);
   const midCell = boardEl.querySelector(`.cell[data-r='${mr}'][data-c='${mc}']`);
   const dstCell = boardEl.querySelector(`.cell[data-r='${dr}'][data-c='${dc}']`);
 
   if (srcCell) srcCell.innerHTML = "";
   if (midCell) {
-    // animación de eliminación: agregar clase y remover la img
     midCell.classList.add("eliminada");
     midCell.innerHTML = "";
     setTimeout(()=> midCell.classList.remove("eliminada"), 350);
@@ -235,80 +229,72 @@ function executeMove(sr,sc, dr,dc, mr,mc){
     img.src = "../img/image.png";
     img.draggable = false;
     img.className = "peg-img";
+    img.style.filter = `drop-shadow(0 0 6px ${colorSeleccionado}) saturate(1.8)`;
     dstCell.innerHTML = "";
     dstCell.appendChild(img);
   }
   updateStatus();
 }
 
-/* cuando el pointer se levanta: si hay selección y soltamos sobre un destino válido, movemos */
 function onPointerUpDocument(e){
   if (!selected) return endDragCleanup();
-  // detectamos la celda bajo el puntero
+
   const el = document.elementFromPoint(e.clientX, e.clientY);
   const cell = el && el.closest(".cell");
   if (cell && cell.classList.contains("hint")){
     const dr = parseInt(cell.dataset.r,10);
     const dc = parseInt(cell.dataset.c,10);
-    // buscar mid entre selected y dest
     const sr = selected.r, sc = selected.c;
     const mr = (sr + dr)/2, mc = (sc + dc)/2;
-    // validar que son enteros y que la jugada es válida
+
     if (Number.isInteger(mr) && Number.isInteger(mc) && board[mr][mc] === 1){
       executeMove(sr,sc,dr,dc,mr,mc);
-      // limpiar selección y hints
       clearSelection();
-      // después de cada movimiento, verificar si hay movimientos posibles
       if (!anyMovesAvailable()){
         endGame("No quedan movimientos posibles. Juego terminado.");
       }
       return endDragCleanup();
     }
   }
-  // si no es válido, volvemos al estado inicial (sin mover)
   endDragCleanup();
 }
 
-/* finaliza el drag: limpia floating, listeners, clases */
 function endDragCleanup(){
   removeFloating();
   document.removeEventListener("pointermove", onPointerMoveDocument);
   document.removeEventListener("pointerup", onPointerUpDocument);
-  // quitar capture si existe
   try { if (selected && selected.cellEl) selected.cellEl.releasePointerCapture && selected.cellEl.releasePointerCapture(); } catch(e){}
-  // quitar clase selected (no establecemos selected=null porque click puede reusar)
   const sel = boardEl.querySelector(".cell.selected");
   if (sel) sel.classList.remove("selected");
   selected = null;
   clearHints();
 }
 
-/* handler pointermove global para posicionar la imagen flotante */
 function onPointerMoveDocument(e){
   moveFloating(e.clientX, e.clientY);
 }
 
-/* pointerdown en una celda: puede seleccionar y comenzar drag si hay ficha */
 function onPointerDownCell(e){
-  // ignorar botones secundarios
+
+  if (!gameRunning) {
+    alert("Primero presioná INICIAR para comenzar.");
+    return;
+  }
+
   if (e.button !== 0) return;
   const cell = e.currentTarget;
   const r = parseInt(cell.dataset.r,10);
   const c = parseInt(cell.dataset.c,10);
-  if (board[r][c] !== 1) return; // sólo si hay ficha
+  if (board[r][c] !== 1) return;
 
-  // evitar text selection y tomar el pointer
   cell.setPointerCapture && cell.setPointerCapture(e.pointerId);
 
-  // seleccionar visualmente
   clearSelection();
   cell.classList.add("selected");
   selected = { r, c, cellEl: cell };
 
-  // mostrar hints
   showHintsFor(r,c);
 
-  // crear floating con la imagen y escuchar movimientos globales
   const img = cell.querySelector("img");
   const src = img ? img.src : "..img/image.png";
   createFloatingImg(src, e.clientX, e.clientY);
@@ -319,6 +305,7 @@ function onPointerDownCell(e){
 /* ---------- TIMER ---------- */
 function startTimer(){
   stopTimer();
+  gameRunning = true;
   timerInterval = setInterval(() => {
     timeLeft--;
     timerEl.textContent = "Tiempo: " + formatTime(timeLeft);
@@ -329,13 +316,13 @@ function startTimer(){
   }, 1000);
 }
 function stopTimer(){
+  gameRunning = false;
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 }
 
 /* ---------- FIN/JUEGO ---------- */
 function endGame(message){
   stopTimer();
-  // quitar listeners globales por si acaso
   endDragCleanup();
   setTimeout(()=> {
     alert(message + " Pulsa Reiniciar para jugar otra vez.");
@@ -343,12 +330,11 @@ function endGame(message){
 }
 
 /* ---------- EVENTOS UI ---------- */
-restartBtn?.addEventListener("click", (e)=>{
+restartBtn?.addEventListener("click", ()=>{
   resetBoard();
 });
 
 document.getElementById("timeLimit")?.addEventListener("change", (e)=>{
-  // al cambiar el límite actualizamos el timeLeft (no reiniciamos)
   const v = parseInt(e.target.value,10);
   if (!isNaN(v) && v>0){
     timeLimit = v;
@@ -365,35 +351,26 @@ function init(){
     info.style.display = "none";
     document.body.appendChild(info);
   }
-  resetBoard(); // prepara el tablero, pero no arranca el timer
+  resetBoard();
 }
 
-//ELEGIR COLOR DE LAS FICHAS
-let colorSeleccionado = "#FF5A76"; // color inicial
+let colorSeleccionado = "#ffffff";
 
 document.querySelectorAll(".color-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
-    // Quita selección previa
+
+    if (gameRunning){
+      alert("No podés cambiar el color mientras el juego está corriendo.");
+      return;
+    }
+
     document.querySelectorAll(".color-btn").forEach(b => b.classList.remove("selected"));
     e.currentTarget.classList.add("selected");
 
-    // Nuevo color elegido
     colorSeleccionado = e.currentTarget.dataset.color;
 
-    // Cambia color de las fichas (efecto de resplandor)
     document.querySelectorAll(".cell img").forEach(img => {
       img.style.filter = `drop-shadow(0 0 6px ${colorSeleccionado}) saturate(1.8)`;
     });
-
-    // Cambia el fondo del tablero para combinar
-    const board = document.getElementById("board");
-    board.style.backgroundColor = colorSeleccionado;
-
-    // Ajusta el gradiente de huecos para que contraste
-    board.style.backgroundImage =
-      `radial-gradient(circle 28px at center, rgba(255,255,255,0.6) 0%, ${colorSeleccionado} 80%, transparent 81%)`;
   });
 });
-
-
-

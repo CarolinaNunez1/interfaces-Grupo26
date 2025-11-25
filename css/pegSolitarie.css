@@ -725,3 +725,11 @@ h2 {
 #start:hover::before {
   left: 120%;
 }
+
+#board, 
+#board * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
