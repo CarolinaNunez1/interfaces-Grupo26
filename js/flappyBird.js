@@ -2,7 +2,38 @@
 const menuButton = document.querySelector(".menu-button");
 const sidebar = document.querySelector(".sidebar");
 const overlay = document.querySelector(".overlay");
+  const runner = document.getElementById('runner');
+  const bird = document.getElementById('bird');
+  const pipesCont = document.getElementById('pipes');
+  const timerEl = document.getElementById('timer');
+  const scoreEl = document.getElementById('score');
+  const gameOverEl = document.getElementById('gameOver');
+  const overTitle = document.getElementById('overTitle');
+  const overMsg = document.getElementById('overMsg');
+  const restartBtn = document.getElementById('restart');
+  const resetBtn = document.getElementById('reset-btn');
 
+  const RUNNER_W = runner.clientWidth;
+  const RUNNER_H = runner.clientHeight;
+
+  let started = false;
+  let playing = true;
+  let y = 200;
+  let vy = 0;
+  const GRAV = 0.6;
+  const FLAP_V = -10;
+  const PIPE_GAP = 150;
+  const PIPE_W = 80;
+  const PIPE_SPEED = 2.3;
+  const SPAWN_INTERVAL = 1600;
+
+  let pipes = [];
+  let spawnTimer = null;
+  let rafId = null;
+  let lastTime = null;
+  let startTime = null;
+  let elapsed = 0;
+  let score = 0;
 if (menuButton && sidebar && overlay) {
   menuButton.addEventListener("click", () => {
     menuButton.classList.toggle("open");
@@ -43,154 +74,7 @@ document.querySelector(".comment-input").addEventListener("keypress", (e) => {
   }
 });
 
-// JUEGO
-const bird = document.getElementById("bird");
-const game = document.getElementById("game");
-const world = document.getElementById("world");
-const scoreDisplay = document.getElementById("score");
-const gameOverScreen = document.getElementById("gameOver");
-
-let birdY = 200;
-let velocity = 0;
-let gravity = 0.35; // gravedad más suave
-let lift = -8;      // fuerza de salto controlada
-let score = 0;
-let pipes = [];
-
-
-// SALTO
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
-    velocity += lift;
-  }
-});
-
-document.addEventListener("click", () => {
-  velocity += lift;
-});
-
-
-// LOOP PRINCIPAL
-function gameLoop() {
-    velocity += gravity;
-    birdY += velocity;
-  bird.style.top = birdY + "px";
-
-  // evitar movimientos bruscos
-    if (velocity > 8) velocity = 8;
-    if (velocity < -8) velocity = -8;
-
-  // Colisión suelo
-  if (birdY > 460 || birdY < 0) endGame();
-
-  movePipes();
-  detectCollisions();
-
-  requestAnimationFrame(gameLoop);
-}
-
-// CREAR TUBOS
-function createPipes() {
-  let gap = 150;
-  let topHeight = Math.random() * 200 + 50;
-  let bottomHeight = 500 - (topHeight + gap);
-
-  let topPipe = document.createElement("div");
-  let bottomPipe = document.createElement("div");
-
-  topPipe.className = "pipe";
-  bottomPipe.className = "pipe";
-
-  topPipe.style.height = topHeight + "px";
-  bottomPipe.style.height = bottomHeight + "px";
-
-  topPipe.style.top = "0px";
-  bottomPipe.style.top = topHeight + gap + "px";
-
-  topPipe.style.left = "800px";
-  bottomPipe.style.left = "800px";
-
-  world.appendChild(topPipe);
-  world.appendChild(bottomPipe);
-
-  pipes.push({ top: topPipe, bottom: bottomPipe, x: 800 });
-}
-
-function movePipes() {
-  pipes.forEach(pipe => {
-    pipe.x -= 3;
-    pipe.top.style.left = pipe.x + "px";
-    pipe.bottom.style.left = pipe.x + "px";
-
-    if (pipe.x === 120) {
-      score++;
-      scoreDisplay.innerText = score;
-    }
-  });
-}
-
-// COLISIONES
-function detectCollisions() {
-  pipes.forEach(pipe => {
-    const birdRect = bird.getBoundingClientRect();
-    const topRect = pipe.top.getBoundingClientRect();
-    const bottomRect = pipe.bottom.getBoundingClientRect();
-
-    if (
-      birdRect.right > topRect.left &&
-      birdRect.left < topRect.right &&
-      (birdRect.top < topRect.bottom || birdRect.bottom > bottomRect.top)
-    ) {
-      endGame();
-    }
-  });
-}
-
-// FIN DEL JUEGO
-function endGame() {
-  gameOverScreen.style.display = "flex";
-}
-
-// GENERAR TUBOS AUTOMÁTICAMENTE
-setInterval(createPipes, 1800);
-
-// INICIAR
-gameLoop();
-// ...existing code...
 (() => {
-  const runner = document.getElementById('runner');
-  const bird = document.getElementById('bird');
-  const pipesCont = document.getElementById('pipes');
-  const timerEl = document.getElementById('timer');
-  const scoreEl = document.getElementById('score');
-  const gameOverEl = document.getElementById('gameOver');
-  const overTitle = document.getElementById('overTitle');
-  const overMsg = document.getElementById('overMsg');
-  const restartBtn = document.getElementById('restart');
-  const resetBtn = document.getElementById('reset-btn');
-
-  const RUNNER_W = runner.clientWidth;
-  const RUNNER_H = runner.clientHeight;
-
-  let started = false;
-  let playing = true;
-  let y = 200;
-  let vy = 0;
-  const GRAV = 0.6;
-  const FLAP_V = -10;
-  const PIPE_GAP = 150;
-  const PIPE_W = 80;
-  const PIPE_SPEED = 2.3;
-  const SPAWN_INTERVAL = 1600;
-
-  let pipes = [];
-  let spawnTimer = null;
-  let rafId = null;
-  let lastTime = null;
-  let startTime = null;
-  let elapsed = 0;
-  let score = 0;
-
   function reset() {
     // limpiar
     pipesCont.innerHTML = '';
