@@ -2,266 +2,304 @@
 const menuButton = document.querySelector(".menu-button");
 const sidebar = document.querySelector(".sidebar");
 const overlay = document.querySelector(".overlay");
-  const runner = document.getElementById('runner');
-  const bird = document.getElementById('bird');
-  const pipesCont = document.getElementById('pipes');
-  const timerEl = document.getElementById('timer');
-  const scoreEl = document.getElementById('score');
-  const gameOverEl = document.getElementById('gameOver');
-  const overTitle = document.getElementById('overTitle');
-  const overMsg = document.getElementById('overMsg');
-  const restartBtn = document.getElementById('restart');
-  const resetBtn = document.getElementById('reset-btn');
+const runner = document.getElementById('runner');
+const bird = document.getElementById('bird');
+const pipesCont = document.getElementById('pipes');
+const timerEl = document.getElementById('timer');
+const scoreEl = document.getElementById('score');
+const gameOverEl = document.getElementById('gameOver');
+const overTitle = document.getElementById('overTitle');
+const overMsg = document.getElementById('overMsg');
+const restartBtn = document.getElementById('restart');
+const resetBtn = document.getElementById('reset-btn');
 
-  const RUNNER_W = runner.clientWidth;
-  const RUNNER_H = runner.clientHeight;
+// El tamaño del corredor se obtiene al inicio
+let RUNNER_W = runner.clientWidth;
+let RUNNER_H = runner.clientHeight;
 
-  let started = false;
-  let playing = true;
-  let y = 200;
-  let vy = 0;
-  const GRAV = 0.6;
-  const FLAP_V = -10;
-  const PIPE_GAP = 150;
-  const PIPE_W = 80;
-  const PIPE_SPEED = 2.3;
-  const SPAWN_INTERVAL = 1600;
+let started = false;
+let playing = true;
+let y = 200; // Posición vertical inicial
+let vy = 0; // Velocidad vertical
+const GRAV = 0.6; // Gravedad
+const FLAP_V = -10; // Impulso al aletear (valor negativo para subir)
+const PIPE_GAP = 150; // Espacio entre tubería superior e inferior
+const PIPE_W = 80; // Ancho de la tubería
+const PIPE_SPEED = 3.5; // Velocidad de desplazamiento de las tuberías (ajustado de 2.3 a 3.5 para un juego más rápido)
+const SPAWN_INTERVAL = 1800; // Intervalo de generación de tuberías en ms (antes 1600)
 
-  let pipes = [];
-  let spawnTimer = null;
-  let rafId = null;
-  let lastTime = null;
-  let startTime = null;
-  let elapsed = 0;
-  let score = 0;
+let pipes = []; // Array para almacenar las tuberías
+let spawnTimer = null;
+let rafId = null;
+let lastTime = null;
+let startTime = null;
+let elapsed = 0;
+let score = 0; // Puntuación en segundos
+
+// Manejo del menú lateral
 if (menuButton && sidebar && overlay) {
   menuButton.addEventListener("click", () => {
-    menuButton.classList.toggle("open");
+    // menuButton.classList.toggle("open"); // No existe "open" en CSS
     sidebar.classList.toggle("active");
     overlay.classList.toggle("active");
   });
 
   overlay.addEventListener("click", () => {
-    menuButton.classList.remove("open");
+    // menuButton.classList.remove("open"); // No existe "open" en CSS
     sidebar.classList.remove("active");
     overlay.classList.remove("active");
   });
 }
 
 // --- COMENTARIOS ---
-const commentInput = document.querySelector(".comment-input");
+const commentInput = document.getElementById("comment-input");
 const commentsContainer = document.querySelector(".comments");
 
 if (commentInput && commentsContainer) {
   commentInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter" && e.target.value.trim() !== "") {
-      const commentBox = document.createElement("div");
-      commentBox.classList.add("comment");
-      commentBox.innerHTML = `<strong>Tú:</strong> ${e.target.value}`;
-      commentsContainer.insertBefore(commentBox, commentInput);
+      const newComment = document.createElement("div");
+      newComment.classList.add("comentario");
+      
+      // Estructura del nuevo comentario (simulando tu HTML)
+      newComment.innerHTML = `
+        <img src="../img/princesa123.png" alt="avatar">
+        <div class="comentario-info">
+            <p class="nombre"><strong>princesa123</strong> (tú)</p>
+            <p class="mensaje">${e.target.value}</p>
+        </div>
+      `;
+      
+      // Insertar el nuevo comentario al principio de la lista de comentarios
+      commentsContainer.prepend(newComment);
       e.target.value = "";
     }
   });
 }
-// Simular comentario
-document.querySelector(".comment-input").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    const commentBox = document.createElement("div");
-    commentBox.classList.add("comment");
-    commentBox.innerHTML = `<strong>Tú:</strong> ${e.target.value}`;
-    document.querySelector(".comments").insertBefore(commentBox, e.target);
-    e.target.value = "";
+
+// --- LÓGICA DEL JUEGO FLAPPY BIRD ---
+
+function reset() {
+  // Recalcular tamaño del runner por si se redimensionó la ventana
+  RUNNER_W = runner.clientWidth;
+  RUNNER_H = runner.clientHeight;
+
+  // Limpiar juego
+  pipesCont.innerHTML = '';
+  pipes = [];
+  started = false;
+  playing = true;
+  y = 200;
+  vy = 0;
+  bird.style.top = y + 'px';
+  bird.classList.remove('crash', 'flap');
+  gameOverEl.classList.remove('show');
+  score = 0;
+  scoreEl.textContent = 'Puntos: 0';
+  timerEl.textContent = '00:00';
+  
+  if (spawnTimer) { clearInterval(spawnTimer); spawnTimer = null; }
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  lastTime = null;
+  startTime = null;
+}
+
+function startGame() {
+  if (started) return;
+  started = true;
+  startTime = performance.now();
+  lastTime = performance.now();
+  spawnTimer = setInterval(spawnPipe, SPAWN_INTERVAL);
+  rafId = requestAnimationFrame(loop);
+}
+
+function spawnPipe() {
+  // Ajuste para asegurar que el runner tenga el tamaño correcto antes de generar
+  RUNNER_H = runner.clientHeight;
+  RUNNER_W = runner.clientWidth;
+  
+  const gapSize = PIPE_GAP;
+  const minTop = 60; // Mínimo espacio superior para el hueco
+  const maxTop = RUNNER_H - gapSize - 60; // Máximo espacio superior
+  
+  if (maxTop <= minTop) {
+      // Si no hay suficiente espacio para el gap, abortar (ej. ventana muy pequeña)
+      return;
   }
-});
+  
+  const holeY = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
 
-(() => {
-  function reset() {
-    // limpiar
-    pipesCont.innerHTML = '';
-    pipes = [];
-    started = false;
-    playing = true;
-    y = 200;
-    vy = 0;
-    bird.style.top = y + 'px';
-    bird.classList.remove('crash', 'flap');
-    gameOverEl.classList.remove('show');
-    score = 0;
-    scoreEl.textContent = 'Puntos: 0';
-    timerEl.textContent = '00:00';
-    if (spawnTimer) { clearInterval(spawnTimer); spawnTimer = null; }
-    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    lastTime = null;
-    startTime = null;
+  // Crear contenedor pipe (top y bottom)
+  const top = document.createElement('div');
+  const bottom = document.createElement('div');
+  top.className = 'pipe top';
+  bottom.className = 'pipe bottom';
+
+  // Tubería superior
+  top.style.height = holeY + 'px';
+  top.style.left = RUNNER_W + 'px';
+  top.style.top = '0px';
+  // Tubería inferior
+  bottom.style.height = (RUNNER_H - holeY - gapSize) + 'px';
+  bottom.style.left = RUNNER_W + 'px';
+  bottom.style.bottom = '0px'; // Asegura que esté en el fondo
+
+  pipesCont.appendChild(top);
+  pipesCont.appendChild(bottom);
+
+  // Almacenar el par de tuberías y su posición para la detección de colisiones y movimiento
+  pipes.push({el: top, x: RUNNER_W, w: PIPE_W, scored: false});
+  pipes.push({el: bottom, x: RUNNER_W, w: PIPE_W, scored: false});
+}
+
+function flap() {
+  vy = FLAP_V;
+  bird.classList.add('flap');
+  // Remover la clase de aleteo para permitir que se repita la animación
+  setTimeout(()=> bird.classList.remove('flap'), 120);
+}
+
+// Obtener límites del elemento
+function getRect(el) {
+  return el.getBoundingClientRect();
+}
+
+function checkCollision() {
+  const runnerRect = getRect(runner);
+  const b = getRect(bird);
+
+  // Colisión con el suelo (fondo del runner)
+  // Usar el límite inferior del runner como suelo
+  const birdBottom = b.top + b.height - runnerRect.top;
+  if (birdBottom >= RUNNER_H || b.top < runnerRect.top) { 
+      return true; 
   }
 
-  function startGame() {
-    if (started) return;
-    started = true;
-    startTime = performance.now();
-    lastTime = performance.now();
-    spawnTimer = setInterval(spawnPipe, SPAWN_INTERVAL);
-    rafId = requestAnimationFrame(loop);
-  }
-
-  function spawnPipe() {
-    const gapSize = PIPE_GAP;
-    const minTop = 40;
-    const maxTop = RUNNER_H - gapSize - 60;
-    const holeY = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
-
-    // crear contenedor pipe (top y bottom)
-    const top = document.createElement('div');
-    const bottom = document.createElement('div');
-    top.className = 'pipe top';
-    bottom.className = 'pipe bottom';
-
-    top.style.height = holeY + 'px';
-    top.style.right = '-10px';
-    top.style.top = '0px';
-    top.dataset.x = RUNNER_W;
-    top.style.left = RUNNER_W + 'px';
-
-    bottom.style.height = (RUNNER_H - holeY - gapSize) + 'px';
-    bottom.style.left = RUNNER_W + 'px';
-    bottom.dataset.x = RUNNER_W;
-
-    pipesCont.appendChild(top);
-    pipesCont.appendChild(bottom);
-
-    pipes.push({el: top, x: RUNNER_W, w: PIPE_W});
-    pipes.push({el: bottom, x: RUNNER_W, w: PIPE_W});
-  }
-
-  function flap() {
-    vy = FLAP_V;
-    bird.classList.add('flap');
-    setTimeout(()=> bird.classList.remove('flap'), 120);
-  }
-
-  function rect(el) {
-    return el.getBoundingClientRect();
-  }
-
-  function checkCollision() {
-    const b = rect(bird);
-    for (let p of pipes) {
-      const r = rect(p.el);
-      // simple AABB
+  // Colisión con tuberías
+  for (let p of pipes) {
+      // Solo necesitamos revisar la colisión contra los elementos de las tuberías
+      const r = getRect(p.el);
+      
+      // Detección simple AABB (Axis-Aligned Bounding Box)
       if (!(b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom)) {
-        return true;
+          return true; // Colisión detectada
       }
-    }
-    // suelo / techo
-    const runnerRect = rect(runner);
-    if (b.top < runnerRect.top || b.bottom > runnerRect.bottom) return true;
-    return false;
   }
+  return false;
+}
 
-  function gameOver(win) {
-    playing = false;
-    bird.classList.remove('flap');
-    bird.classList.add('crash');
-    if (spawnTimer) { clearInterval(spawnTimer); spawnTimer = null; }
-    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    gameOverEl.classList.add('show');
-    if (win) {
-      overTitle.textContent = '¡WIN!';
-      overMsg.textContent = '¡Lograste aguantar 5 minutos sin chocar!';
-    } else {
+function gameOver(win) {
+  if (!playing) return;
+  
+  playing = false;
+  bird.classList.remove('flap');
+  bird.classList.add('crash');
+  
+  if (spawnTimer) { clearInterval(spawnTimer); spawnTimer = null; }
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  
+  gameOverEl.classList.add('show');
+  
+  if (win) {
+      overTitle.textContent = '¡GANASTE!';
+      overMsg.textContent = `¡Lograste sobrevivir ${score} obstaculos! ¡Felicitaciones!`;
+  } else {
       overTitle.textContent = 'Game Over';
-      overMsg.textContent = 'Chocaste. Inténtalo de nuevo.';
-    }
+      overMsg.textContent = `Puntuación final: ${score} puntos. ¡Inténtalo de nuevo!`;
   }
+}
 
-  function updateTimer(now) {
-    elapsed = now - startTime;
-    const totalSec = Math.floor(elapsed/1000);
-    const mm = String(Math.floor(totalSec/60)).padStart(2,'0');
-    const ss = String(totalSec%60).padStart(2,'0');
-    timerEl.textContent = `${mm}:${ss}`;
+function updateTimer(now) {
+  elapsed = now - startTime;
+  const totalSec = Math.floor(elapsed/1000);
+  const mm = String(Math.floor(totalSec/60)).padStart(2,'0');
+  const ss = String(totalSec%60).padStart(2,'0');
+  timerEl.textContent = `${mm}:${ss}`;
+}
 
-    // check win (5 minutos = 300 s)
-    if (elapsed >= 300000 && playing) {
-      score = Math.max(score, 1);
-      scoreEl.textContent = `Puntos: ${score}`;
-      gameOver(true);
-    }
-  }
+function loop(now) {
+  if (!lastTime) lastTime = now;
+  // const dt = now - lastTime; // dt no es necesario ya que la velocidad es constante (PIPE_SPEED)
+  lastTime = now;
 
-  function loop(now) {
-    if (!lastTime) lastTime = now;
-    const dt = now - lastTime;
-    lastTime = now;
+  if (started && playing) {
+    // 1. Física del pájaro
+    vy += GRAV;
+    y += vy;
+    // Asegurar que el pájaro no salga por el techo (aunque la colisión lo maneja)
+    y = Math.max(y, 0); 
+    bird.style.top = y + 'px';
 
-    // física del pájaro
-    if (started && playing) {
-      vy += GRAV;
-      y += vy;
-      bird.style.top = y + 'px';
-
-      // mover pipes
-      for (let i = pipes.length-1; i >= 0; i--) {
-        const p = pipes[i];
-        p.x -= PIPE_SPEED;
-        p.el.style.left = p.x + 'px';
-        p.el.dataset.x = p.x;
-        // si fuera completamente fuera del canvas lo eliminamos
-        if (p.x + p.w < -50) {
-          p.el.remove();
-          pipes.splice(i,1);
-          // sumar puntos al pasar pares (cada par representa 1)
-          // evitar dar puntos por cada pieza; contar cuando se elimina pair
-          // simple: aumentar score por cada 2 eliminados
-        }
+    // 2. Mover pipes
+    for (let i = pipes.length-1; i >= 0; i--) {
+      const p = pipes[i];
+      // Mover a la izquierda
+      p.x -= PIPE_SPEED;
+      p.el.style.left = p.x + 'px';
+      
+      // 3. Chequear puntuación
+      // Solo chequear el primer elemento del par (el que no fue puntuado)
+      if (!p.scored && p.el.classList.contains('top') && p.x + PIPE_W < 120) { // 120px es la posición horizontal del pájaro
+          p.scored = true;
+          // Buscar el pipe inferior del mismo par y marcarlo también
+          if (i + 1 < pipes.length && pipes[i+1].el.classList.contains('bottom')) {
+              pipes[i+1].scored = true;
+          } else if (i - 1 >= 0 && pipes[i-1].el.classList.contains('bottom')) {
+              pipes[i-1].scored = true;
+          }
+          
+          score++;
+          scoreEl.textContent = `Puntos: ${score}`;
       }
-
-      // puntuación simple: cuantos segundos sobrevividos
-      const newScore = Math.floor((now - startTime)/1000);
-      if (newScore !== score) {
-        score = newScore;
-        scoreEl.textContent = `Puntos: ${score}`;
-      }
-
-      // actualiza timer y win
-      updateTimer(now);
-
-      // colisiones
-      if (checkCollision()) {
-        gameOver(false);
-        return;
+      
+      // Si está completamente fuera del canvas lo eliminamos
+      if (p.x + p.w < -50) {
+        p.el.remove();
+        pipes.splice(i,1);
       }
     }
 
-    rafId = requestAnimationFrame(loop);
+    // 4. Actualiza timer
+    updateTimer(now);
+
+    // 5. Colisiones
+    if (checkCollision()) {
+      gameOver(false);
+      return;
+    }
   }
 
-  // eventos: toque/click para flap y para iniciar
-  function pointerHandler(e) {
-    if (!playing) return;
-    if (!started) startGame();
-    flap();
+  rafId = requestAnimationFrame(loop);
+}
+
+// Eventos: toque/click/espacio para flap y para iniciar
+function pointerHandler(e) {
+  // Evitar que el menú cierre el overlay active cuando se hace click en el juego
+  if (e.target.closest('.sidebar.active') || e.target.closest('.overlay.active')) return; 
+  
+  if (!playing) return;
+  if (!started) startGame();
+  flap();
+}
+
+function keyHandler(e) {
+  if (e.code === 'Space') {
+      e.preventDefault(); // Evitar scroll de página al presionar espacio
+      if (!playing) return;
+      if (!started) startGame();
+      flap();
   }
+}
 
-  // reiniciar
-  restartBtn.addEventListener('click', reset);
-  resetBtn.addEventListener('click', reset);
-  document.addEventListener('visibilitychange', () => {
-    // pausa básica si salta de pestaña
-    if (document.hidden && spawnTimer) clearInterval(spawnTimer);
-    if (!document.hidden && started && !spawnTimer) spawnTimer = setInterval(spawnPipe, SPAWN_INTERVAL);
-  });
+// Event Listeners
+restartBtn.addEventListener('click', reset);
+resetBtn.addEventListener('click', reset);
 
-  // pointer (soporta mouse/touch)
-  runner.addEventListener('pointerdown', pointerHandler);
-  runner.addEventListener('pointerup', (e)=>{ /* por si se quiere usar */ });
+// Pointer (soporta mouse/touch) - Inicia el juego y aletea
+runner.addEventListener('pointerdown', pointerHandler);
 
-  // restart en overlay
-  restartBtn.addEventListener('click', () => {
-    reset();
-  });
+// Teclado (para tecla ESPACIO)
+document.addEventListener('keydown', keyHandler);
 
-  // init
-  reset();
-
-})();
+// Init
+reset();
