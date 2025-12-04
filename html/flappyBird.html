@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinki - Flappy Bird</title>
-    <link rel="stylesheet" href="../css/flappyBird.css">
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pinki - Flappy Bird</title>
+  <link rel="stylesheet" href="../css/flappyBird.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
+   <!-- Encabezado -->
     <header class="header">
         <button class="menu-button">
             <img src="../img/menu.png" alt="Menú">
@@ -24,6 +25,7 @@
         </a>
     </header>
 
+    <!-- Menú lateral -->
     <aside class="sidebar">
         <div class="user-info">
             <img src="../img/user-icon.png" alt="">
@@ -41,6 +43,7 @@
         </nav>
     </aside>
 
+    <!-- Fondo semitransparente para cerrar el menú -->
     <div class="overlay"></div>
 
     <nav class="breadcrumb">
@@ -51,102 +54,77 @@
         <a href="flappyBird.html" class="active">Flappy Bird</a>
     </nav>
 
-    <div class="content-bar"></div>
+   
+        <!--Instruccion de juego-->
+        <div class="instrucciones">
+            <h2>Flappy Bird</h2>
 
-    <main>
-      <div class="game-area">
-        <div class="controls">
-          <button id="reset-btn">Reiniciar</button>
-          <div id="timer">00:00</div>
-          <div id="score">Puntos: 0</div>
+             <h3>¿Cómo se juega?</h3>
+  <p>El objetivo del juego es <strong>mantener al pájaro volando sin chocar contra los obstáculos</strong>
+    y lograr la mayor cantidad de puntos posible.<br></p>
+
+  <h3>Controles:</h3>
+  <p>Presioná la tecla ESPACIO para que el pájaro suba.</p>
+
+  <h3>Obstáculos:</h3>
+  <p>Debés esquivar los tubos verdes que aparecen en el camino.</p>
+
+  <h3>Puntaje:</h3>
+  <p>Cuanto más tiempo sobrevivas, mayor será tu puntaje.</p>
+
+  <h3>Objetivo final:</h3>
+  <p>¡Superá tu propio récord y convertite en la mejor voladora de Pinki!</p>
+</section>
         </div>
 
-        <div class="game-runner" id="runner">
-          <div class="background-layer"></div>
+        <!--Comentarios de la pagina-->
+        <div class="comentarios-container">
+            <h2><i class="fa-regular fa-comments"></i> <img src="../img/comentario.png" alt=""> Comentarios</h2>
 
-          <div id="bird" aria-hidden="true">
-            <span class="wing left"></span>
-            <span class="wing right"></span>
-            <span class="cheek"></span>
-          </div>
+            <div class="comentario usuario-actual">
+            <img src="../img/princesa123.png" alt="avatar">
+            <div class="comentario-info">
+                <p class="nombre"><strong>princesa123</strong> (tú)</p>
+                <input type="text" placeholder="¿Qué opinas de este juego?">
+            </div>
+            </div>
 
-          <div id="pipes"></div>
-
-          <div id="gameOver" aria-hidden="true">
-            <h2 id="overTitle">Game Over</h2>
-            <p id="overMsg"></p>
-            <button id="restart">Volver a jugar</button>
-          </div>
+        <div class="comentario">
+            <img src="../img/juani04.png" alt="avatar">
+            <div class="comentario-info">
+            <p class="nombre">pili_</p>
+            <p class="mensaje">Es muy divertidoooo</p>
+            </div>
         </div>
-      </div>
-      
-      <div class="instrucciones">
-          <h2>Flappy Bird</h2>
 
-            <h3>Objetivo:</h3>
-      <p>El objetivo del juego es <strong>mantener al pájaro volando sin chocar contra los obstáculos</strong>
-        y lograr la mayor cantidad de puntos posible.<br></p>
-
-      <h3>Controles:</h3>
-      <p>Presioná la tecla <strong>Espacio</strong> o haz <strong>clicks</strong> para que el pájaro vuele.</p>
-
-      <h3>Obstáculos:</h3>
-      <p>Debés esquivar los tubos verdes que aparecen en el camino.</p>
-
-      <h3>Puntaje:</h3>
-      <p>El puntaje es la cantidad de obstaculos que pases.</p>
-
-      <h3>Objetivo final:</h3>
-      <p>¡Superá tu propio récord y convertite en la mejor voladora de Pinki!</p>
-      </div>
-
-      <div class="comentarios-container">
-          <h2><i class="fa-regular fa-comments"></i> <img src="../img/comentario.png" alt=""> Comentarios</h2>
-
-          <div class="comentario usuario-actual">
-          <img src="../img/princesa123.png" alt="avatar">
-          <div class="comentario-info">
-              <p class="nombre"><strong>princesa123</strong> (tú)</p>
-              <input type="text" id="comment-input" placeholder="¿Qué opinas de este juego?">
-          </div>
-          </div>
-
-        <div class="comments">
-          <div class="comentario">
-              <img src="../img/juani04.png" alt="avatar">
-              <div class="comentario-info">
-              <p class="nombre">pili_</p>
-              <p class="mensaje">Es muy bueno</p>
-              </div>
-          </div>
-
-          <div class="comentario">
-              <img src="../img/luli11.png" alt="avatar">
-              <div class="comentario-info">
-                  <p class="nombre">cata22</p>
-                  <p class="mensaje">Me encantaaa</p>
-              </div>
-          </div>
-
-          <div class="comentario">
-              <img src="../img/violeta5.png" alt="avatar">
-              <div class="comentario-info">
-                  <p class="nombre">violeta5</p>
-                  <p class="mensaje">Esta genial</p>
-              </div>
-          </div>
-
-          <div class="comentario">
-              <img src="../img/loli_29.png" alt="avatar">
-              <div class="comentario-info">
-                  <p class="nombre">loli_29</p>
-                  <p class="mensaje">Me gustaria uno de stitch</p>
-              </div>
-          </div>
+        <div class="comentario">
+            <img src="../img/luli11.png" alt="avatar">
+            <div class="comentario-info">
+                <p class="nombre">cata22</p>
+                <p class="mensaje">Me encanta de frozen</p>
+            </div>
         </div>
-      </div>
+
+        <div class="comentario">
+            <img src="../img/violeta5.png" alt="avatar">
+            <div class="comentario-info">
+                <p class="nombre">violeta5</p>
+                <p class="mensaje">Esta genial</p>
+            </div>
+        </div>
+
+        <div class="comentario">
+            <img src="../img/loli_29.png" alt="avatar">
+            <div class="comentario-info">
+                <p class="nombre">loli_29</p>
+                <p class="mensaje">Me gustaria uno de stitch</p>
+            </div>
+        </div>
+        </div>
+
     </main>
 
+    <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-column">
@@ -199,6 +177,6 @@
         <p class="footer-copy">© 2025 Pinki. Todos los juegos y sonrisas reservadas</p>
     </footer>
 
-    <script src="../js/flappyBird.js"></script>
+  <script src="../js/flappyBird.js"></script>
 </body>
 </html>
