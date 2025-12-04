@@ -14,14 +14,14 @@ const restartBtn = document.getElementById('restart');
 const resetBtn = document.getElementById('reset-btn');
 
 // El tamaño del corredor se obtiene al inicio
-let RUNNER_W = runner.clientWidth;
-let RUNNER_H = runner.clientHeight;
+let RUNNER_W = runner.clientWidth;//ancho del tablero(eje:600px)
+let RUNNER_H = runner.clientHeight;// Alto del tablero (ej: 600px)
 
-let started = false;
-let playing = true;
+let started = false;//si comienza el juego
+let playing = true;//si el juego esta en curso
 let y = 200; // Posición vertical inicial
 let vy = 0; // Velocidad vertical
-const GRAV = 0.6; // Gravedad
+const GRAV = 0.6; // Gravedad que cae el pajaro
 const FLAP_V = -10; // Impulso al aletear (valor negativo para subir)
 const PIPE_GAP = 150; // Espacio entre tubería superior e inferior
 const PIPE_W = 80; // Ancho de la tubería
@@ -86,18 +86,20 @@ function reset() {
 
   // Limpiar juego
   pipesCont.innerHTML = '';
-  pipes = [];
+  pipes = [];//vaciar array de tuberias
+  //resetea el estado del juego
+
   started = false;
   playing = true;
-  y = 200;
-  vy = 0;
-  bird.style.top = y + 'px';
-  bird.classList.remove('crash', 'flap');
-  gameOverEl.classList.remove('show');
+  y = 200;//pajaro en el centro
+  vy = 0;//sin velocidad
+  bird.style.top = y + 'px';//posiciona el pajaro
+  bird.classList.remove('crash', 'flap');//quita animaciones para el principio
+  gameOverEl.classList.remove('show');//esconde el overlay
   score = 0;
   scoreEl.textContent = 'Puntos: 0';
   timerEl.textContent = '00:00';
-  
+  //detiene animaciones
   if (spawnTimer) { clearInterval(spawnTimer); spawnTimer = null; }
   if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
   lastTime = null;
@@ -105,14 +107,17 @@ function reset() {
 }
 
 function startGame() {
-  if (started) return;
-  started = true;
-  startTime = performance.now();
-  lastTime = performance.now();
+  if (started) return;//evita ejercutarse 2 veces
+  started = true;//marca que comenzo
+  startTime = performance.now();//tiempo inicial
+  lastTime = performance.now();//tiempo del ultimo frame
+
+  // Inicia la generación de tuberías
   spawnTimer = setInterval(spawnPipe, SPAWN_INTERVAL);
+  // Genera la primera tubería inmediatamente
   rafId = requestAnimationFrame(loop);
 }
-
+//crea tubos
 function spawnPipe() {
   // Ajuste para asegurar que el runner tenga el tamaño correcto antes de generar
   RUNNER_H = runner.clientHeight;
@@ -126,7 +131,7 @@ function spawnPipe() {
       // Si no hay suficiente espacio para el gap, abortar (ej. ventana muy pequeña)
       return;
   }
-  
+  //egenera un numero aleatorio para la posicion del hueco
   const holeY = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
 
   // Crear contenedor pipe (top y bottom)
@@ -152,6 +157,7 @@ function spawnPipe() {
   pipes.push({el: bottom, x: RUNNER_W, w: PIPE_W, scored: false});
 }
 
+//movimientos del pajaro
 function flap() {
   vy = FLAP_V;
   bird.classList.add('flap');
@@ -164,6 +170,7 @@ function getRect(el) {
   return el.getBoundingClientRect();
 }
 
+//detecta si chocaste
 function checkCollision() {
   const runnerRect = getRect(runner);
   const b = getRect(bird);
@@ -172,7 +179,7 @@ function checkCollision() {
   // Usar el límite inferior del runner como suelo
   const birdBottom = b.top + b.height - runnerRect.top;
   if (birdBottom >= RUNNER_H || b.top < runnerRect.top) { 
-      return true; 
+      return true; //choco
   }
 
   // Colisión con tuberías
@@ -180,7 +187,8 @@ function checkCollision() {
       // Solo necesitamos revisar la colisión contra los elementos de las tuberías
       const r = getRect(p.el);
       
-      // Detección simple AABB (Axis-Aligned Bounding Box)
+      
+      // Si NO está en ningún lado = está dentro = COLISIÓN
       if (!(b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom)) {
           return true; // Colisión detectada
       }
@@ -209,6 +217,7 @@ function gameOver(win) {
   }
 }
 
+//actualiza el timer
 function updateTimer(now) {
   elapsed = now - startTime;
   const totalSec = Math.floor(elapsed/1000);
@@ -224,11 +233,11 @@ function loop(now) {
 
   if (started && playing) {
     // 1. Física del pájaro
-    vy += GRAV;
-    y += vy;
+    vy += GRAV;//aumenta velocidad por gravedad
+    y += vy;//suma velocidad a la posicion
     // Asegurar que el pájaro no salga por el techo (aunque la colisión lo maneja)
     y = Math.max(y, 0); 
-    bird.style.top = y + 'px';
+    bird.style.top = y + 'px';//actualiza la psoicion del pajaro
 
     // 2. Mover pipes
     for (let i = pipes.length-1; i >= 0; i--) {

@@ -32,7 +32,7 @@ const START_MASK = [
   [ -1, -1, 1, 1, 1, -1, -1 ]
 ];
 
-let gameRunning = false;
+let gameRunning = false;//indica si el timer esta activo
 
 /* imagen de ficha como data-url SVG */
 const PEG_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -49,16 +49,16 @@ const PEG_SVG = "data:image/svg+xml;utf8," + encodeURIComponent(
 );
 
 /* ---------- ESTADO ---------- */
-let board = [];
-let boardEl = document.getElementById("board");
-let timerEl = document.getElementById("timer");
-let restartBtn = document.getElementById("restart");
-let startBtn = document.getElementById("start");
-let selected = null;
-let floating = null;
-let timeLimit = 300;
-let timeLeft = timeLimit;
-let timerInterval = null;
+let board = [];//matriz del tablero
+let boardEl = document.getElementById("board");//contenedor del tablero
+let timerEl = document.getElementById("timer");//elemento del timer
+let restartBtn = document.getElementById("restart");//btn reiniciar
+let startBtn = document.getElementById("start");//btn iniciar
+let selected = null;//objeto con la celda seleccionada 
+let floating = null;//imagen flotante
+let timeLimit = 300;//limite inical en sg
+let timeLeft = timeLimit;//tiempo restante
+let timerInterval = null;//id del intervalo del timer
 
 /* ---------- UTIL ---------- */
 function cloneMask(mask){ return mask.map(row => row.slice()); }
@@ -79,7 +79,7 @@ function validMovesFrom(r,c){
   }
   return moves;
 }
-
+//recorre todo el tablero y devuelve true si existe
 function anyMovesAvailable(){
   for (let r=0;r<ROWS;r++){
     for (let c=0;c<COLS;c++){
@@ -88,13 +88,13 @@ function anyMovesAvailable(){
   }
   return false;
 }
-
+//actualiza el contador de fichas
 function updateStatus(){
   const pegs = board.flat().filter(x => x===1).length;
   const leftEl = document.getElementById("pegsLeft");
   if (leftEl) leftEl.textContent = pegs;
 }
-
+//convierte segundos a formato mm:ss
 function formatTime(s){
   const mm = String(Math.floor(s/60)).padStart(2,'0');
   const ss = String(s%60).padStart(2,'0');
@@ -135,7 +135,7 @@ function createBoardDOM(){
   }
   updateStatus();
 }
-
+//vuleve a estado inicial
 function resetBoard() {
   board = cloneMask(START_MASK);
   createBoardDOM();
@@ -178,9 +178,9 @@ function showHintsFor(r,c){
     if (cell) cell.classList.add("hint");
   }
 }
-
+//crea imagen fija que sigue el cursor durante el drag 
 function createFloatingImg(src, x, y){
-  removeFloating();
+  removeFloating();//si ya habia floting lo elimina
   const img = document.createElement("img");
   img.src = "../img/image.png";
   img.style.position = "fixed";
@@ -194,20 +194,20 @@ function createFloatingImg(src, x, y){
   floating = img;
   return img;
 }
-
+//actualiza la posicion de la imagen flotante
 function moveFloating(x,y){
   if (!floating) return;
   floating.style.left = (x - 30) + "px";
   floating.style.top  = (y - 30) + "px";
 }
-
+//elimina la imagen flotante
 function removeFloating(){
   if (floating){
     floating.remove();
     floating = null;
   }
 }
-
+//aplica el salto y actualiza el dom
 function executeMove(sr,sc, dr,dc, mr,mc){
   board[sr][sc] = 0;
   board[mr][mc] = 0;
@@ -235,7 +235,7 @@ function executeMove(sr,sc, dr,dc, mr,mc){
   }
   updateStatus();
 }
-
+//manejador global que se ejecuta al soltar el puntero
 function onPointerUpDocument(e){
   if (!selected) return endDragCleanup();
 
@@ -258,7 +258,7 @@ function onPointerUpDocument(e){
   }
   endDragCleanup();
 }
-
+// endDragCleanup: remueve floating, listeners y limpia selección/hints
 function endDragCleanup(){
   removeFloating();
   document.removeEventListener("pointermove", onPointerMoveDocument);
@@ -273,7 +273,7 @@ function endDragCleanup(){
 function onPointerMoveDocument(e){
   moveFloating(e.clientX, e.clientY);
 }
-
+//mueve la imagen flotante siguiendo el cursor
 function onPointerDownCell(e){
 
   if (!gameRunning) {
