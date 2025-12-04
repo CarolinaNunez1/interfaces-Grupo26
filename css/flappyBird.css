@@ -129,6 +129,195 @@ h2 {
     align-items: center;
     justify-content: center;
 }
+/*JUEGO FLAPPY BIRD*/
+.flappyeagle-embed {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+}
+
+/* PARALLAX BACKGROUNDS - 4 capas */
+.flappyeagle-embed .fe-bg-layer {
+    position: absolute;
+    width: 100.1%; /* Ligeramente más ancho para evitar gaps de redondeo */
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-repeat: no-repeat; /* No-repeat es clave para esta técnica */
+    background-size: 100% 100%; /* Asegura que la imagen ocupe todo el div */
+    animation-name: fe-scroll-bg;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.flappyeagle-embed .fe-bg-layer--copy {
+    left: 100%; /* Posiciona la copia justo a la derecha de la original */
+}
+
+/* CAPA 1: más lejana (más lenta) */
+.flappyeagle-embed #fe-bg-1, .flappyeagle-embed #fe-bg-1-copy {
+    background-image: url('../img/1.png.png');
+    animation-duration: 60s;
+    z-index: 1;
+}
+
+/* CAPA 2 */
+.flappyeagle-embed #fe-bg-2, .flappyeagle-embed #fe-bg-2-copy {
+    background-image: url('../img/2.png');
+    animation-duration: 40s;
+    z-index: 2;
+}
+/* CAPA 5*/
+.flappyeagle-embed #fe-bg-5, .flappyeagle-embed #fe-bg-5-copy {
+    background-image: url('../img/5.png');
+    animation-duration: 32s;
+    z-index: 3;
+}
+
+/* CAPA 3 */
+.flappyeagle-embed #fe-bg-3, .flappyeagle-embed #fe-bg-3-copy {
+    background-image: url('../img/3.png');
+    animation-duration: 20s;
+    z-index: 4;
+}
+
+/* CAPA 4: más cercana (más rápida) */
+.flappyeagle-embed #fe-bg-4, .flappyeagle-embed #fe-bg-4-copy {
+    background-image: url('../img/4.png');
+    animation-duration: 10s;
+    z-index: 5;
+}
+/* Animación única para el scroll infinito */
+@keyframes fe-scroll-bg {
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+/* ANIMACIÓN DE DESPLAZAMIENTO LATERAL PARA TUBERÍAS */
+@keyframes fe-scroll-pipe {
+    /* Mantiene el inicio en 0 de traslación */
+    from { transform: translateX(0); }
+    /* Mueve la distancia total calculada en JS (ancho del contenedor + 80px) */
+    to { transform: translateX(var(--pipe-move-distance)); }
+}
+
+/* PÁJARO */
+.flappyeagle-embed #fe-bird {
+    z-index: 10; /* Cambiado de 2000 a 10 para estar debajo de la UI */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 64px;     /* ancho de 1 frame (40px * 1.6) */
+    height: 65.6px; /* alto de 1 frame (41px * 1.6) */
+    background-image: url('../img/personaje.png');
+    background-size: 256px 65.6px; /* tamaño TOTAL del spritesheet (160px*1.6 x 41px*1.6) */
+    animation: fe-bird-flap 0.4s steps(4) infinite;
+}
+/* EXPLOSIÓN */
+.flappyeagle-embed .fe-exploding {
+    /* Cambia el sprite y la animación al morir */
+    background-image: url('../img/enemy-deadth.png');
+    background-size: 384px 65.6px; /* 6 frames * 64px ancho, 41px*1.6 alto */
+    animation: fe-bird-explode 0.6s steps(6) forwards;
+    transform: none; /* Anula la rotación del pájaro al morir */
+}
+
+@keyframes fe-bird-explode {
+    from { background-position: 0 0; }
+    to   { background-position: -384px 0; } /* Mueve 6 frames (6 * 64px) */
+}
+
+/* OBSTÁCULOS (tuberías/cajas) */
+.flappyeagle-embed .fe-pipe {
+    position: absolute;
+    width: 80px; /* Ancho se mantiene */
+    /* Nuevos estilos para usar la imagen de caja apilable */
+    background-image: url('../img/caja.png');
+    background-repeat: repeat-y; /* Clave: repetir verticalmente */
+    background-size: 80px 80px; /* Tamaño de una caja/unidad */
+    z-index: 15;
+
+    /* MODIFICAR PROPIEDADES DE ANIMACIÓN */
+    animation-name: fe-scroll-pipe;
+    animation-timing-function: linear;
+    /* La duración se establecerá en JS */
+    animation-duration: 10s; /* Valor de respaldo, se pisa en JS */
+    animation-iteration-count: 1; /* ¡Ejecutar solo una vez! */
+    animation-fill-mode: forwards; /* Clave: mantiene la tubería fuera de pantalla */
+    animation-play-state: paused;
+}
+/* BONUS (gemas) */
+.flappyeagle-embed .fe-bonus {
+    position: absolute;
+    width: 48px; /* Ancho de 1 frame (30px * 1.6) */
+    height: 41.6px; /* Alto de 1 frame (26px * 1.6) */
+    z-index: 15;
+    background-image: url('../img/gem.png');
+    background-size: 240px 41.6px; /* Tamaño total del spritesheet (150px*1.6 x 26px*1.6) */
+    animation:
+        fe-gem-spin 0.7s steps(5) infinite,
+        fe-gem-float 1.4s ease-in-out infinite;
+}
+
+@keyframes fe-gem-spin {
+    from { background-position: 0 0; }
+    to   { background-position: -240px 0; } /* Mueve 5 frames (5 * 48px) */
+}
+
+/* BOMBAS */
+.flappyeagle-embed .fe-bomb {
+    position: absolute;
+    width: 52.5px; /* Ancho de 1 frame (21px * 2.5) */
+    height: 52.5px; /* Alto de 1 frame (21px * 2.5) */
+    z-index: 15;
+    background-image: url('../img/bombs.png');
+    background-size: 262.5px 52.5px; /* Tamaño total del spritesheet (105px*2.5 x 21px*2.5) */
+    animation:
+        fe-bomb-spin 0.7s steps(5) infinite,
+        fe-gem-float 1.4s ease-in-out infinite;
+}
+@keyframes fe-bomb-spin {
+    from { background-position: 0 0; }
+    to   { background-position: -262.5px 0; } /* Mueve 5 frames (5 * 52.5px) */
+}
+
+/* Nueva animación para flotar */
+@keyframes fe-gem-float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* PARTÍCULAS DE COLECCIÓN */
+@keyframes fe-collect-particle {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+flappyeagle-embed .fe-particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: gold;
+    border-radius: 50%;
+    animation: fe-collect-particle 0.5s ease-out forwards;
+    z-index: 25;
+}
+
 
 /* === OVERLAY (fondo oscuro) === */
 .overlay {

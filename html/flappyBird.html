@@ -53,7 +53,44 @@
         <span>➜</span>
         <a href="flappyBird.html" class="active">Flappy Bird</a>
     </nav>
+<main>
+    <div class="game-container">
+        <div class="game-container__image" id="flappy-eagle-container">
+            <!-- Contenido del juego Flappy Eagle inyectado y adaptado -->
+            <div class="flappyeagle-embed" data-fe>
+                <!-- Capas de parallax (duplicadas para scroll infinito) -->
+                <div class="fe-bg-layer" id="fe-bg-1"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-1-copy"></div>
 
+                <div class="fe-bg-layer" id="fe-bg-2"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-2-copy"></div>
+
+                <div class="fe-bg-layer" id="fe-bg-5"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-5-copy"></div>
+
+                <div class="fe-bg-layer" id="fe-bg-3"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-3-copy"></div>
+
+                <div class="fe-bg-layer" id="fe-bg-4"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-4-copy"></div>
+
+                <!-- Pájaro -->
+                <div id="fe-bird"> </div>
+
+                <!-- UI -->
+                <div id="fe-score">Puntos: 0</div>
+                <div id="fe-timer">Tiempo: 60s</div>
+
+                <!-- Pantalla de Game Over -->
+                <div id="fe-game-over">
+                    <h1>¡Juego Terminado!</h1>
+                    <p id="fe-final-score"></p>
+                    <p id="fe-final-time"></p>
+                    <button id="fe-reset-button">Jugar de Nuevo</button>
+                </div>
+            </div>
+          </div>
+        </div>
    
         <!--Instruccion de juego-->
         <div class="instrucciones">
