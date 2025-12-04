@@ -53,6 +53,7 @@
         <span>➜</span>
         <a href="flappyBird.html" class="active">Flappy Bird</a>
     </nav>
+
 <main>
     <div class="game-container">
         <div class="game-container__image" id="flappy-eagle-container">
@@ -88,30 +89,18 @@
                     <p id="fe-final-time"></p>
                     <button id="fe-reset-button">Jugar de Nuevo</button>
                 </div>
+
+                <!-- Instrucciones -->
+                <div id="fe-instructions">
+                    <h2>Instrucciones</h2>
+                    <p>Presiona <strong>ESPACIO</strong> para volar</p>
+                    <p>Recoge gemas para sumar puntos</p>
+                    <p>Cuidado con las bombas!!!</p>
+                    <p>Evita las cajas para no chocar</p>
+                    <p>¡Sobrevive 60 segundos para ganar!</p>
+                    <p style="margin-top: 20px;"><strong>Presiona ESPACIO para comenzar</strong></p>
+                </div>
             </div>
-          </div>
-        </div>
-   
-        <!--Instruccion de juego-->
-        <div class="instrucciones">
-            <h2>Flappy Bird</h2>
-
-             <h3>¿Cómo se juega?</h3>
-  <p>El objetivo del juego es <strong>mantener al pájaro volando sin chocar contra los obstáculos</strong>
-    y lograr la mayor cantidad de puntos posible.<br></p>
-
-  <h3>Controles:</h3>
-  <p>Presioná la tecla ESPACIO para que el pájaro suba.</p>
-
-  <h3>Obstáculos:</h3>
-  <p>Debés esquivar los tubos verdes que aparecen en el camino.</p>
-
-  <h3>Puntaje:</h3>
-  <p>Cuanto más tiempo sobrevivas, mayor será tu puntaje.</p>
-
-  <h3>Objetivo final:</h3>
-  <p>¡Superá tu propio récord y convertite en la mejor voladora de Pinki!</p>
-</section>
         </div>
 
         <!--Comentarios de la pagina-->
@@ -213,7 +202,25 @@
     
         <p class="footer-copy">© 2025 Pinki. Todos los juegos y sonrisas reservadas</p>
     </footer>
+   
+    <!-- Añadido: popup de victoria -->
+    <div id="winPopup" class="win-popup" role="alert" aria-live="assertive" hidden>
+         <div class="win-box">¡Felicidades, ganaste!</div>
+    </div>
 
   <script src="../js/flappyBird.js"></script>
+  <script>
+    // Inicializa el juego Flappy Eagle cuando el DOM esté listo.
+    // El módulo FlappyEagle se encarga de encontrar su contenedor y empezar el juego.
+    document.addEventListener('DOMContentLoaded', () => {
+        const gameContainer = document.querySelector('.flappyeagle-embed');
+        if (gameContainer) {
+            // Llama al método init del módulo global FlappyEagle
+            window.FlappyEagle.init(gameContainer);
+        } else {
+            console.error("No se encontró el contenedor del juego Flappy Eagle.");
+        }
+    });
+</script>
 </body>
 </html>

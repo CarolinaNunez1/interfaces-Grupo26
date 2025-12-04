@@ -135,7 +135,7 @@ h2 {
     padding: 0;
     box-sizing: border-box;
     width: 100%;
-    height: 100%;
+    height: 600px;
     position: relative;
     overflow: hidden;
     font-family: 'Arial', sans-serif;
@@ -221,6 +221,11 @@ h2 {
     background-image: url('../img/personaje.png');
     background-size: 256px 65.6px; /* tamaño TOTAL del spritesheet (160px*1.6 x 41px*1.6) */
     animation: fe-bird-flap 0.4s steps(4) infinite;
+}
+/* Animación: 4 frames → mover -256px (64px * 4) */
+@keyframes fe-bird-flap {
+    from { background-position: 0 0; }
+    to   { background-position: -256px 0; }
 }
 /* EXPLOSIÓN */
 .flappyeagle-embed .fe-exploding {
@@ -308,7 +313,7 @@ h2 {
     0% { transform: translate(0, 0) scale(1); opacity: 1; }
     100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
 }
-flappyeagle-embed .fe-particle {
+.flappyeagle-embed .fe-particle {
     position: absolute;
     width: 10px;
     height: 10px;
@@ -317,7 +322,89 @@ flappyeagle-embed .fe-particle {
     animation: fe-collect-particle 0.5s ease-out forwards;
     z-index: 25;
 }
+/* UI */
+.flappyeagle-embed #fe-score {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 36px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 3px 3px 5px black;
+    z-index: 30;
+}
 
+.flappyeagle-embed #fe-timer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px black;
+    z-index: 30;
+}
+
+.flappyeagle-embed #fe-game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(122, 25, 212, 0.8);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 40;
+    display: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.flappyeagle-embed #fe-game-over h1 {
+    font-size: 42px;
+    margin-bottom: 20px;
+}
+
+.flappyeagle-embed #fe-game-over button {
+    font-size: 24px;
+    padding: 15px 30px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.flappyeagle-embed #fe-game-over button:hover {
+    background: #45a049;
+}
+
+.flappyeagle-embed #fe-instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(236, 198, 231, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    z-index: 40;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.flappyeagle-embed #fe-instructions h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 32px;
+}
+
+.flappyeagle-embed #fe-instructions p {
+    margin: 10px 0;
+    color: #666;
+}
 
 /* === OVERLAY (fondo oscuro) === */
 .overlay {
@@ -370,36 +457,6 @@ main {
 }
 
 
-/* === SECCIÓN DE INSTRUCCIONES === */
-.instrucciones {
-  background-color: #FAEDED;
-  border-radius: 10px;
-  padding: 30px;
-  margin: 50px auto;
-  width: 90%;
-  max-width: 700px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  font-family: 'Baloo 2', cursive;
-}
-
-.instrucciones h2 {
-  color: #FF5A76;
-  font-size: 1.3rem;
-  margin-bottom: 15px;
-}
-
-.instrucciones p {
-  font-size: 1rem;
-  color: #2c2c2c;
-  line-height: 1.5;
-  margin-bottom: 25px;
-}
-
-.instrucciones h3 {
-  color: #FF5A76;
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-}
 
 
 /* === COMENTARIOS === */
