@@ -57,50 +57,75 @@
 <main>
     <div class="game-container">
         <div class="game-container__image" id="flappy-eagle-container">
-            <!-- Contenido del juego Flappy Eagle inyectado y adaptado -->
-            <div class="flappyeagle-embed" data-fe>
-                <!-- Capas de parallax (duplicadas para scroll infinito) -->
-                <div class="fe-bg-layer" id="fe-bg-1"></div>
-                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-1-copy"></div>
+            <!-- JUEGO (solo UNA VEZ, sin duplicados) -->
+            <div class="flappyeagle-embed" data-fe aria-label="Área de juego Flappy Pinki" role="application">
 
-                <div class="fe-bg-layer" id="fe-bg-2"></div>
-                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-2-copy"></div>
+                <!-- PARALLAX -->
+                <div class="fe-bg-layer" id="fe-bg-1" data-speed="0.15"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-1-copy" data-speed="0.15"></div>
 
-                <div class="fe-bg-layer" id="fe-bg-5"></div>
-                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-5-copy"></div>
+                <div class="fe-bg-layer" id="fe-bg-2" data-speed="0.30"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-2-copy" data-speed="0.30"></div>
 
-                <div class="fe-bg-layer" id="fe-bg-3"></div>
-                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-3-copy"></div>
+                <div class="fe-bg-layer" id="fe-bg-5" data-speed="0.55"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-5-copy" data-speed="0.55"></div>
 
-                <div class="fe-bg-layer" id="fe-bg-4"></div>
-                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-4-copy"></div>
+                <div class="fe-bg-layer" id="fe-bg-3" data-speed="0.75"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-3-copy" data-speed="0.75"></div>
 
-                <!-- Pájaro -->
-                <div id="fe-bird"> </div>
+                <div class="fe-bg-layer" id="fe-bg-4" data-speed="1.00"></div>
+                <div class="fe-bg-layer fe-bg-layer--copy" id="fe-bg-4-copy" data-speed="1.00"></div>
+
+                <!-- PÁJARO -->
+                <div id="fe-bird" role="img" aria-label="Pájaro jugador"></div>
+
+                <!-- POWERUP -->
+                <div id="fe-powerup" class="fe-powerup" aria-hidden="true">
+                    <span class="fe-powerup-label">¡Escudo!</span>
+                </div>
 
                 <!-- UI -->
-                <div id="fe-score">Puntos: 0</div>
-                <div id="fe-timer">Tiempo: 60s</div>
+                <div id="fe-score" aria-live="polite">Puntos: 0</div>
+                <div id="fe-timer" aria-live="polite">Tiempo: 60s</div>
 
-                <!-- Pantalla de Game Over -->
-                <div id="fe-game-over">
-                    <h1>¡Juego Terminado!</h1>
+                <!-- Objetos que genera JS -->
+                <div id="fe-objects" aria-hidden="true"></div>
+
+                <!-- GAME OVER -->
+                <div id="fe-game-over" role="dialog" aria-modal="true" aria-hidden="true">
+                    <h1 id="fe-game-over-title">¡Juego Terminado!</h1>
                     <p id="fe-final-score"></p>
                     <p id="fe-final-time"></p>
-                    <button id="fe-reset-button">Jugar de Nuevo</button>
+                    <button id="fe-reset-button" type="button">Jugar de Nuevo</button>
                 </div>
 
-                <!-- Instrucciones -->
-                <div id="fe-instructions">
-                    <h2>Instrucciones</h2>
-                    <p>Presiona <strong>ESPACIO</strong> para volar</p>
-                    <p>Recoge gemas para sumar puntos</p>
-                    <p>Cuidado con las bombas!!!</p>
-                    <p>Evita las cajas para no chocar</p>
-                    <p>¡Sobrevive 60 segundos para ganar!</p>
-                    <p style="margin-top: 20px;"><strong>Presiona ESPACIO para comenzar</strong></p>
-                </div>
             </div>
+        </div>
+
+        <!-- INSTRUCCIONES ABAJO (como vos querías) -->
+        <div class="instrucciones">
+            <h2>Flappy Bird 🩷</h2>
+
+            <h3>¿Cómo se juega?</h3>
+            <p>
+                El objetivo es <strong>volar sin chocar</strong> mientras juntás 
+                <strong>gemas</strong> para sumar puntos.
+            </p>
+
+            <ul>
+                <li>Presioná <strong>ESPACIO</strong> para volar.</li>
+                <li>También podés hacer <strong>click</strong> para subir.</li>
+                <li><strong>Esquivá</strong> bombas y tuberias: si chocás, perdés.</li>
+            </ul>
+
+            <h3>Para ganar:</h3>
+            <p>
+                Tenés que <strong>sobrevivir 60 segundos</strong>.
+            </p>
+
+            <p style="margin-top:16px; font-size:1.1em;">
+                ⭐ <strong>Presioná ESPACIO o hacé clic para comenzar</strong> ⭐
+            </p>
         </div>
 
         <!--Comentarios de la pagina-->
@@ -208,19 +233,27 @@
          <div class="win-box">¡Felicidades, ganaste!</div>
     </div>
 
+  <!-- solo un archivo JS externo -->
   <script src="../js/flappyBird.js"></script>
-  <script>
-    // Inicializa el juego Flappy Eagle cuando el DOM esté listo.
-    // El módulo FlappyEagle se encarga de encontrar su contenedor y empezar el juego.
-    document.addEventListener('DOMContentLoaded', () => {
-        const gameContainer = document.querySelector('.flappyeagle-embed');
-        if (gameContainer) {
-            // Llama al método init del módulo global FlappyEagle
-            window.FlappyEagle.init(gameContainer);
-        } else {
-            console.error("No se encontró el contenedor del juego Flappy Eagle.");
-        }
-    });
-</script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

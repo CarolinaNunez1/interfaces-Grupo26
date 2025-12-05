@@ -1,4 +1,6 @@
-// --- MENU LATERAL ---
+// flappyBird.js - módulo FlappyEagle (auto-inicializa al DOMContentLoaded)
+
+// --- MENU LATERAL (sin cambios funcionales) ---
 const menuButton = document.querySelector(".menu-button");
 const sidebar = document.querySelector(".sidebar");
 const overlay = document.querySelector(".overlay");
@@ -17,7 +19,7 @@ if (menuButton && sidebar && overlay) {
   });
 }
 
-// --- COMENTARIOS ---
+// --- COMENTARIOS (uso seguro de selectores: solo si existen) ---
 const commentInput = document.querySelector(".comment-input");
 const commentsContainer = document.querySelector(".comments");
 
@@ -32,18 +34,22 @@ if (commentInput && commentsContainer) {
     }
   });
 }
-// Simular comentario
-document.querySelector(".comment-input").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    const commentBox = document.createElement("div");
-    commentBox.classList.add("comment");
-    commentBox.innerHTML = `<strong>Tú:</strong> ${e.target.value}`;
-    document.querySelector(".comments").insertBefore(commentBox, e.target);
-    e.target.value = "";
-  }
-});
+// segunda escucha guardada (evita errores si no existe)
+if (document.querySelector(".comment-input") && document.querySelector(".comments")) {
+  document.querySelector(".comment-input").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      const commentBox = document.createElement("div");
+      commentBox.classList.add("comment");
+      commentBox.innerHTML = `<strong>Tú:</strong> ${e.target.value}`;
+      document.querySelector(".comments").insertBefore(commentBox, e.target);
+      e.target.value = "";
+    }
+  });
+}
+
+// ------------------- Módulo del juego -------------------
 window.FlappyEagle = (() => {
-    // Estado interno del módulo, no accesible desde fuera.
+    // Estado interno
     let state = {
         container: null,
         bird: null,
@@ -52,6 +58,8 @@ window.FlappyEagle = (() => {
         gameOverScreen: null,
         instructions: null,
         resetButton: null,
+        powerupEl: null,
+        objectsContainer: null,
 
         birdY: 250,
         birdVelocity: 0,
@@ -61,12 +69,12 @@ window.FlappyEagle = (() => {
         timeLeft: 60,
         gameRunning: false,
         gameStarted: false,
-        lastTime: 0, // Nuevo: Almacena el timestamp del fotograma anterior
+        lastTime: 0,
 
         pipes: [],
         bonuses: [],
         bombs: [],
-        pipeSpeed: 0, // Lo calcularemos dinámicamente
+        pipeSpeed: 0,
 
         pipeInterval: null,
         bonusInterval: null,
@@ -75,23 +83,43 @@ window.FlappyEagle = (() => {
 
         containerHeight: 0,
         containerWidth: 0,
+
+        // power-up (escudo)
+        hasShield: false,
+        shieldTimeout: null,
     };
 
-    // --- MANEJO DE EVENTOS ---
-    // Funciones nombradas para poder añadirlas y quitarlas en destroy().
+    // --- Eventos nombrados (para removerlos en destroy) ---
     const handleKeyDown = (e) => {
         if (e.code === 'Space') {
             e.preventDefault();
-            if (!state.gameStarted) {
-                state.instructions.style.display = 'none';
-                startGame();
-                state.gameStarted = true;
-            }
-            if (state.gameRunning) {
-                jump();
-            }
+            startOrJump();
         }
     };
+
+    const handlePointerDown = (e) => {
+        // prevenir interacciones con inputs u overlays
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON')) return;
+        startOrJump();
+    };
+
+   function startOrJump() {
+    // Inicia el juego si todavía no comenzó
+    if (!state.gameStarted) {
+
+        // Ocultar instrucciones SOLO si existieran
+        const instructions = document.getElementById("fe-instructions");
+        if (instructions) instructions.style.display = "none";
+
+        startGame();
+        state.gameStarted = true;
+        return;
+    }
+
+    // Si el juego ya empezó → salto
+    jump();
+}
+
 
     const handleResize = () => {
         if (!state.container) return;
@@ -104,7 +132,7 @@ window.FlappyEagle = (() => {
         }
     };
 
-    // --- LÓGICA DEL JUEGO ---
+    // --- Juego ---
     function startGame() {
         state.gameRunning = true;
         state.score = 0;
@@ -114,6 +142,8 @@ window.FlappyEagle = (() => {
         state.pipes = [];
         state.bonuses = [];
         state.bombs = [];
+        state.hasShield = false;
+        if (state.shieldTimeout) { clearTimeout(state.shieldTimeout); state.shieldTimeout = null; }
 
         updateScore();
         updateTimer();
@@ -124,17 +154,19 @@ window.FlappyEagle = (() => {
         // Reiniciar estado visual del pájaro
         state.bird.classList.remove('fe-exploding');
         state.bird.style.transform = 'translateX(-50%) rotate(0deg)';
+        state.bird.style.opacity = '1';
         state.gameOverScreen.style.display = 'none';
+        hidePowerup();
 
-        // Iniciar intervalos del juego
-        state.lastTime = performance.now(); // Para la física del pájaro
-        requestAnimationFrame(gameLoop); // Para la física del pájaro y colisiones
-        state.pipeInterval = setInterval(createPipe, 2000);
+        // Iniciar loop y timers
+        state.lastTime = performance.now();
+        requestAnimationFrame(gameLoop);
+        state.pipeInterval = setInterval(createPipe, 1800);
         state.bonusInterval = setInterval(createBonus, 3000);
-        state.bombInterval = setInterval(createBomb, 4000);
+        state.bombInterval = setInterval(createBomb, 4200);
         state.timerInterval = setInterval(updateTime, 1000);
 
-        // Iniciar las animaciones CSS
+        // Activar animaciones CSS de pipes ya creadas
         state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
             pipe.style.animationPlayState = 'running';
         });
@@ -145,80 +177,87 @@ window.FlappyEagle = (() => {
     }
 
     function gameLoop(timestamp) {
-        if (!state.gameRunning) {
-            // Si el juego terminó, NO pedir el siguiente frame
-            return;
-        }
+        if (!state.gameRunning) return;
 
-        // 1. Cálculo de Delta Time (tiempo transcurrido desde el último frame)
         const deltaTime = timestamp - state.lastTime;
         state.lastTime = timestamp;
-
-        // 3. Física del pájaro (ajustar por deltaTime)
-        // La gravedad y el salto deben escalarse por deltaTime para consistencia.
-        // Asume que 20ms era el tiempo objetivo original (1.0 = deltaTime / 20)
         const timeScale = deltaTime / 20;
 
-        state.birdVelocity += state.gravity * timeScale; // Aplicar gravedad escalada
-        state.birdY += state.birdVelocity * timeScale; // Aplicar velocidad escalada
+        // física pájaro
+        state.birdVelocity += state.gravity * timeScale;
+        state.birdY += state.birdVelocity * timeScale;
         state.bird.style.top = state.birdY + 'px';
 
-        // Rotación del pájaro
+        // rotación del pájaro
         let rotation = Math.min(Math.max(state.birdVelocity * 3, -30), 90);
         state.bird.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
 
-        // Límites de pantalla
+        // límites
         if (state.birdY < 0) {
             state.birdY = 0;
             state.birdVelocity = 0;
         }
-        // --- Detectar suelo real basado en la altura del piso (100px) ---
-        const GROUND_HEIGHT = 100;
-
-        if (state.birdY + state.bird.offsetHeight >= state.containerHeight ) {
-            explodeBird();
-            endGame('¡Tocaste el suelo!');
+        if (state.birdY + state.bird.offsetHeight >= state.containerHeight) {
+            // Si tiene escudo, consumirlo
+            if (state.hasShield) {
+                consumeShield();
+            } else {
+                explodeBird();
+                endGame('¡Tocaste el suelo!');
+            }
+            return;
         }
 
-        // Chequear colisiones con tuberías
+        // colisiones tuberías
         checkPipeCollisions();
 
-        // Mover bonus y chequear colisiones
+        // mover y chequear bonuses + bombas
         moveElements(state.bonuses, (bonus) => {
             if (checkCollision(state.bird, bonus.element)) {
                 collectBonus(bonus.element);
                 bonus.element.remove();
-                return true; // Indica que fue removido
+                return true;
             }
             return false;
+        }, (item) => {
+            // onRemove optional
+            // no-op
         });
 
-        // Mover bombas y chequear colisiones
         moveElements(state.bombs, (bomb) => {
             if (checkCollision(state.bird, bomb.element)) {
-                explodeBird();
-                bomb.element.remove();
-                setTimeout(() => {
-                    endGame('¡Chocaste con una bomba!');
-                }, 650);
-                return true; // Indica que fue removido
+                // si tiene escudo lo consumimos en lugar de morir
+                if (state.hasShield) {
+                    bomb.element.remove();
+                    consumeShield();
+                    return true;
+                } else {
+                    explodeBird();
+                    bomb.element.remove();
+                    setTimeout(() => endGame('¡Chocaste con una bomba!'), 650);
+                    return true;
+                }
             }
             return false;
         });
 
-        // 4. Llamar al siguiente frame
         requestAnimationFrame(gameLoop);
     }
 
     function checkPipeCollisions() {
         for (let i = state.pipes.length - 1; i >= 0; i--) {
             const pipe = state.pipes[i];
-            // Verificar colisión
+            if (!pipe.element) continue;
             if (checkCollision(state.bird, pipe.element)) {
-                explodeBird();
-                setTimeout(() => {
-                    endGame('¡Chocaste con una caja!');
-                }, 650);
+                if (state.hasShield) {
+                    // consumir shield y quitar la tubería
+                    pipe.element.remove();
+                    state.pipes.splice(i, 1);
+                    consumeShield();
+                } else {
+                    explodeBird();
+                    setTimeout(() => endGame('¡Chocaste con una tuberia!'), 650);
+                }
             }
         }
     }
@@ -226,16 +265,16 @@ window.FlappyEagle = (() => {
     function moveElements(elements, onCollision, onRemove) {
         for (let i = elements.length - 1; i >= 0; i--) {
             const item = elements[i];
-            let itemLeft = parseFloat(item.element.style.left);
-            // Calcular velocidad para bonus basada en la velocidad de la capa 4
-            const BG_DURATION = 10000;
-            const bonusSpeed = state.containerWidth / BG_DURATION * 20; // aproximado para 50fps
-            itemLeft -= bonusSpeed;
-            item.element.style.left = itemLeft + 'px';
+            let left = parseFloat(item.element.style.left || (state.containerWidth + 0));
+            // velocidad basada en capa más cercana (approx)
+            const pxPerSecond = 225; // coincide con velocidad de tuberías
+            const delta = (pxPerSecond / 60); // px por frame aproximado
+            left -= delta;
+            item.element.style.left = left + 'px';
 
-            if (itemLeft < -100) {
+            if (left < -200) {
                 if (onRemove) onRemove(item);
-                item.element.remove();
+                if (item.element && item.element.parentNode) item.element.remove();
                 elements.splice(i, 1);
             } else {
                 if (onCollision(item)) {
@@ -247,107 +286,128 @@ window.FlappyEagle = (() => {
 
     function handlePipeEnd(e) {
         const pipeElement = e.target;
-        // Remover del DOM y del array state.pipes
-        pipeElement.remove();
+        if (pipeElement && pipeElement.parentNode) pipeElement.remove();
         state.pipes = state.pipes.filter(p => p.element !== pipeElement);
     }
 
     function createPipe() {
         if (!state.gameRunning) return;
 
-        const GROUND_HEIGHT = 0;
         const PIPE_WIDTH = 80;
-        // AUMENTAR la velocidad a 200 px/s para que sean visiblemente más rápidas que el fondo de 4s
-        const TARGET_SPEED_PX_PER_SEC = 225; // 200 px/s
+        const GAP = 200;
+        const MIN_H = 50;
+        const maxTop = Math.max(state.containerHeight - GAP - MIN_H - 50, MIN_H);
+        const topHeight = Math.random() * (maxTop - MIN_H) + MIN_H;
 
-        let gap = 200;
-        let minHeight = 50;
-        let maxHeight = state.containerHeight - GROUND_HEIGHT - gap - 50;
-        let topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
-
-        // 1. CÁLCULO DE DISTANCIA Y DURACIÓN
-        // Distancia: Ancho del contenedor + Ancho de la tubería para que salga completamente
         const moveDistance = state.containerWidth + PIPE_WIDTH;
+        const TARGET_SPEED_PX_PER_SEC = 225;
+        const animationDuration = moveDistance / TARGET_SPEED_PX_PER_SEC;
 
-        // **CÁLCULO DE DURACIÓN:**
-        // Duración = Distancia Total (px) / Velocidad (px/s)
-        const animationDuration = moveDistance / TARGET_SPEED_PX_PER_SEC; // Resultado en segundos
-
-        // Función auxiliar para crear y configurar el elemento
         const createPipeElement = (topOrBottom, height = 0) => {
             const el = document.createElement('div');
-            el.className = `fe-pipe fe-pipe-${topOrBottom}`;
-
-            // 2. APLICAR ESTILOS DE ANIMACIÓN DINÁMICOS
-            el.style.left = state.containerWidth + 'px'; // Posición inicial (borde derecho)
+            el.className = `fe-pipe fe-pipe-${topOrBottom} ${topOrBottom === 'top' ? 'fe-pipe-top' : 'fe-pipe-bottom'}`;
+            el.style.left = state.containerWidth + 'px';
             el.style.height = height + 'px';
-            el.style.setProperty('--pipe-move-distance', `-${moveDistance}px`); // Distancia final
+            if (topOrBottom === 'bottom') {
+                el.style.bottom = '0px';
+            } else {
+                el.style.top = '0px';
+            }
+            el.style.setProperty('--pipe-move-distance', `-${moveDistance}px`);
             el.style.animationDuration = `${animationDuration}s`;
             el.style.animationPlayState = state.gameRunning ? 'running' : 'paused';
-
-            // 3. LISTENER PARA ELIMINACIÓN Y PUNTUACIÓN
             el.addEventListener('animationend', handlePipeEnd, { once: true });
+            // añadimos a objects container si existe
+            (state.objectsContainer || state.container).appendChild(el);
             return el;
         };
 
-        // --- Tubería superior ---
-        let pipeTop = createPipeElement('top', topHeight);
-        state.container.appendChild(pipeTop);
-
-        // --- Tubería inferior ---
-        let pipeBottom = createPipeElement('bottom', (state.containerHeight - GROUND_HEIGHT - topHeight - gap));
-        pipeBottom.style.bottom = GROUND_HEIGHT + 'px';
-        state.container.appendChild(pipeBottom);
-
+        const pipeTop = createPipeElement('top', topHeight);
+        const pipeBottom = createPipeElement('bottom', state.containerHeight - topHeight - GAP);
         state.pipes.push({ element: pipeTop });
         state.pipes.push({ element: pipeBottom });
     }
 
-
     function createBonus() {
         if (!state.gameRunning) return;
-
-        let bonusElement = document.createElement('div');
-        bonusElement.className = 'fe-bonus';
-        bonusElement.style.left = state.containerWidth + 'px';
-        bonusElement.style.top = (Math.random() * (state.containerHeight - 250) + 50) + 'px';
-        state.container.appendChild(bonusElement);
-
-        state.bonuses.push({ element: bonusElement });
+        const bonus = document.createElement('div');
+        bonus.className = 'fe-bonus';
+        bonus.style.left = state.containerWidth + 'px';
+        bonus.style.top = (Math.random() * (state.containerHeight - 200) + 50) + 'px';
+        (state.objectsContainer || state.container).appendChild(bonus);
+        state.bonuses.push({ element: bonus });
     }
 
     function createBomb() {
         if (!state.gameRunning) return;
-
-        let bombElement = document.createElement('div');
-        bombElement.className = 'fe-bomb';
-        bombElement.style.left = state.containerWidth + 'px';
-        bombElement.style.top = (Math.random() * (state.containerHeight - 250) + 50) + 'px';
-        state.container.appendChild(bombElement);
-
-        state.bombs.push({ element: bombElement });
+        const bomb = document.createElement('div');
+        bomb.className = 'fe-bomb';
+        bomb.style.left = state.containerWidth + 'px';
+        bomb.style.top = (Math.random() * (state.containerHeight - 200) + 50) + 'px';
+        (state.objectsContainer || state.container).appendChild(bomb);
+        state.bombs.push({ element: bomb });
     }
-
 
     function collectBonus(bonusElement) {
         state.score += 50;
         updateScore();
-        let rect = bonusElement.getBoundingClientRect();
-        let containerRect = state.container.getBoundingClientRect();
 
+        // Partículas
+        const rect = bonusElement.getBoundingClientRect();
+        const containerRect = state.container.getBoundingClientRect();
         for (let i = 0; i < 8; i++) {
-            let particle = document.createElement('div');
+            const particle = document.createElement('div');
             particle.className = 'fe-particle';
-            // Posicionar relativo al contenedor del juego
-            particle.style.left = (rect.left - containerRect.left + 20) + 'px';
-            particle.style.top = (rect.top - containerRect.top + 20) + 'px';
-            let angle = (Math.PI * 2 * i) / 8;
-            let distance = 50;
+            particle.style.left = (rect.left - containerRect.left + 10) + 'px';
+            particle.style.top = (rect.top - containerRect.top + 10) + 'px';
+            const angle = (Math.PI * 2 * i) / 8;
+            const distance = 50;
             particle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
             particle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
             state.container.appendChild(particle);
             setTimeout(() => particle.remove(), 500);
         }
+
+        // Power-up: cada gema otorga un escudo temporal (5s)
+        grantShield(5000);
+    }
+
+    function grantShield(duration = 5000) {
+        state.hasShield = true;
+        showPowerup();
+        if (state.shieldTimeout) clearTimeout(state.shieldTimeout);
+        state.shieldTimeout = setTimeout(() => {
+            state.hasShield = false;
+            hidePowerup();
+            state.shieldTimeout = null;
+        }, duration);
+    }
+
+    function consumeShield() {
+        state.hasShield = false;
+        hidePowerup();
+        if (state.shieldTimeout) { clearTimeout(state.shieldTimeout); state.shieldTimeout = null; }
+        // efecto visual: pequeña ráfaga
+        const burst = document.createElement('div');
+        burst.className = 'fe-particle';
+        // colocarlo sobre el pájaro
+        const birdRect = state.bird.getBoundingClientRect();
+        const containerRect = state.container.getBoundingClientRect();
+        burst.style.left = (birdRect.left - containerRect.left + 5) + 'px';
+        burst.style.top = (birdRect.top - containerRect.top + 5) + 'px';
+        state.container.appendChild(burst);
+        setTimeout(() => burst.remove(), 500);
+    }
+
+    function showPowerup() {
+        if (!state.powerupEl) return;
+        state.powerupEl.classList.add('show');
+        state.powerupEl.style.display = 'block';
+    }
+    function hidePowerup() {
+        if (!state.powerupEl) return;
+        state.powerupEl.classList.remove('show');
+        state.powerupEl.style.display = 'none';
     }
 
     function explodeBird() {
@@ -362,13 +422,11 @@ window.FlappyEagle = (() => {
         state.bird.style.width = '64px';
         state.bird.style.height = '65.6px';
 
-        state.bird.style.backgroundImage = "url('../assets/enemy-deadth.png')";
+        // usar imagen en ../img/ para coincidir con CSS
+        state.bird.style.backgroundImage = "url('../img/enemy-deadth.png')";
         state.bird.style.backgroundSize = '384px 65.6px';
-
-        // Activamos la explosión
         state.bird.style.animation = 'fe-bird-explode 0.6s steps(6) forwards';
 
-        // Cuando la animación termine → hacer invisible el pájaro
         state.bird.addEventListener('animationend', handleExplosionEnd, { once: true });
     }
 
@@ -376,20 +434,14 @@ window.FlappyEagle = (() => {
         state.bird.style.opacity = '0';
     }
 
-
-
-
-    // Constante para reducir la hitbox (en píxeles)
-    const COLLISION_PADDING = 10; // Ajustado para mejor precisión de colisión
+    const COLLISION_PADDING = 10;
 
     function checkCollision(element1, element2) {
+        if (!element1 || !element2) return false;
         const rect1 = element1.getBoundingClientRect();
         let rect2 = element2.getBoundingClientRect();
 
-        // Aplicar padding si element2 es un obstáculo (tubería o bonus)
-        // Usamos hasOwnProperty para verificar si el elemento tiene la clase fe-pipe
         if (element2.classList.contains('fe-pipe') || element2.classList.contains('fe-bonus') || element2.classList.contains('fe-bomb')) {
-            // Creamos una copia de las dimensiones de la tubería (rect2) y ajustamos
             rect2 = {
                 left: rect2.left + COLLISION_PADDING,
                 right: rect2.right - COLLISION_PADDING,
@@ -400,7 +452,6 @@ window.FlappyEagle = (() => {
             };
         }
 
-        // Lógica de colisión con las dimensiones ajustadas
         return !(
             rect1.right < rect2.left ||
             rect1.left > rect2.right ||
@@ -410,7 +461,7 @@ window.FlappyEagle = (() => {
     }
 
     function updateScore() {
-        state.scoreDisplay.textContent = 'Puntos: ' + state.score;
+        if (state.scoreDisplay) state.scoreDisplay.textContent = 'Puntos: ' + state.score;
     }
 
     function updateTime() {
@@ -424,61 +475,51 @@ window.FlappyEagle = (() => {
     }
 
     function updateTimer() {
-        state.timerDisplay.textContent = 'Tiempo: ' + state.timeLeft + 's';
+        if (state.timerDisplay) state.timerDisplay.textContent = 'Tiempo: ' + state.timeLeft + 's';
     }
 
     function endGame(message, won = false) {
-        // Esta función ahora se llama después de la animación de explosión
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
         clearInterval(state.bombInterval);
         clearInterval(state.timerInterval);
 
-        // Pausar las animaciones CSS
         state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
             pipe.style.animationPlayState = 'paused';
         });
 
-        state.gameOverScreen.querySelector('#fe-final-score').textContent = 'Puntuación Final: ' + state.score;
-        state.gameOverScreen.querySelector('#fe-final-time').textContent = message;
-        state.gameOverScreen.style.display = 'block';
-
-        const title = state.gameOverScreen.querySelector('h1');
-        if (won) {
-            title.textContent = 'Ganaste';
-            title.style.color = '#4CAF50';
-        } else {
-            title.textContent = 'Perdiste';
-            title.style.color = '#f44336';
+        if (state.gameOverScreen) {
+            state.gameOverScreen.querySelector('#fe-final-score').textContent = 'Puntuación Final: ' + state.score;
+            state.gameOverScreen.querySelector('#fe-final-time').textContent = message;
+            state.gameOverScreen.style.display = 'block';
+            const title = state.gameOverScreen.querySelector('h1');
+            if (won) {
+                title.textContent = 'Ganaste';
+                title.style.color = '#ffffffff';
+            } else {
+                title.textContent = 'Perdiste';
+                title.style.color = '#ffffffff';
+            }
         }
     }
 
     function resetGame() {
         state.gameStarted = false;
-        state.instructions.style.display = 'block';
-        state.gameOverScreen.style.display = 'none';
+        if (state.instructions) state.instructions.style.display = 'block';
+        if (state.gameOverScreen) state.gameOverScreen.style.display = 'none';
 
-        // --- RESTAURAR SPRITE ORIGINAL DEL PÁJARO ---
-        state.bird.style.backgroundImage = "url('../assets/eagle-attack.png')";
-        state.bird.style.backgroundSize = "256px 65.6px"; // tamaño original de 4 frames
+        // restaurar sprite original (usar ../img/personaje.png)
+        state.bird.style.backgroundImage = "url('../img/birds.png')";
+        state.bird.style.backgroundSize = "256px 65.6px";
         state.bird.style.width = "64px";
         state.bird.style.height = "65.6px";
-
-        // Restaurar animación normal del pájaro
         state.bird.style.animation = "fe-bird-flap 0.4s steps(4) infinite";
-
-        // Restaurar rotación
         state.bird.style.transform = 'translateX(-50%) rotate(0deg)';
-
-        // Quitar cualquier rastro de explosión
         state.bird.classList.remove('fe-exploding');
+        state.bird.style.opacity = '1';
 
-        state.bird.style.opacity = '1'; // volver a verlo
-
-        // Limpiar elementos del juego
         state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle, .fe-bomb').forEach(el => el.remove());
 
-        // Resetear variables principales
         state.score = 0;
         state.timeLeft = 60;
         state.birdY = state.containerHeight / 2;
@@ -488,8 +529,6 @@ window.FlappyEagle = (() => {
         state.bird.style.top = state.birdY + 'px';
     }
 
-
-
     function init(containerElement) {
         if (!containerElement) {
             console.error("FlappyEagle: El contenedor no fue encontrado.");
@@ -497,24 +536,27 @@ window.FlappyEagle = (() => {
         }
         state.container = containerElement;
 
-        // Cachear elementos del DOM con los nuevos IDs prefijados
+        // Cachear elementos del DOM
         state.bird = state.container.querySelector('#fe-bird');
         state.scoreDisplay = state.container.querySelector('#fe-score');
         state.timerDisplay = state.container.querySelector('#fe-timer');
         state.gameOverScreen = state.container.querySelector('#fe-game-over');
         state.instructions = state.container.querySelector('#fe-instructions');
         state.resetButton = state.container.querySelector('#fe-reset-button');
+        state.powerupEl = state.container.querySelector('#fe-powerup');
+        state.objectsContainer = state.container.querySelector('#fe-objects');
 
         if (!state.bird || !state.resetButton) {
             console.error("FlappyEagle: Elementos del juego no encontrados dentro del contenedor.");
             return false;
         }
 
-        // Configurar tamaño responsive inicial
+        // tamaño inicial
         handleResize();
 
-        // Añadir listeners
+        // listeners
         window.addEventListener('keydown', handleKeyDown);
+        state.container.addEventListener('pointerdown', handlePointerDown);
         window.addEventListener('resize', handleResize);
         state.resetButton.addEventListener('click', resetGame);
 
@@ -522,29 +564,33 @@ window.FlappyEagle = (() => {
     }
 
     function destroy() {
-        // Detener el juego y limpiar intervalos
         state.gameRunning = false;
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
         clearInterval(state.bombInterval);
         clearInterval(state.timerInterval);
 
-        // Limpiar listeners
         window.removeEventListener('keydown', handleKeyDown);
+        if (state.container) state.container.removeEventListener('pointerdown', handlePointerDown);
         window.removeEventListener('resize', handleResize);
 
-        // Limpiar el contenedor
         if (state.container) {
-            state.container.innerHTML = '';
+            // no limpiamos todo el HTML del contenedor (evita perder templates)
+            state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle, .fe-bomb').forEach(el => el.remove());
         }
 
-        // Resetear el estado para una posible reinicialización
         Object.keys(state).forEach(key => state[key] = null);
     }
 
-    return {
-        init,
-        destroy
-    };
+    return { init, destroy };
 })();
 
+// Auto-inicializar cuando el DOM esté listo (no hay JS inline en el HTML)
+document.addEventListener('DOMContentLoaded', () => {
+    const gameContainer = document.querySelector('.flappyeagle-embed');
+    if (gameContainer && window.FlappyEagle && typeof window.FlappyEagle.init === 'function') {
+        window.FlappyEagle.init(gameContainer);
+    } else if (!gameContainer) {
+        console.error("No se encontró el contenedor del juego Flappy Eagle.");
+    }
+});
